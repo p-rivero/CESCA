@@ -1,10 +1,10 @@
 # Assembly extras
 
 
-## .GEN_LW
+## GEN_LW
 
-If this file (or any file named ".GEN_LW") is in the same folder as send_file.exe, the program will be converted to a RAM hex file that can be used in LogicWorks, instead of being sent to an Arduino programmer.
-The contents of .GEN_LW don't matter. The only thing checked is the name.
+If this file (or any file named "GEN_LW") is in the same folder as send_file.exe, the program will be converted to a RAM hex file that can be used in LogicWorks, instead of being sent to an Arduino programmer.
+The contents of GEN_LW don't matter. The only thing checked is the name.
 
 LogicWorks is an old circuit simulator and you probably aren't using it, so you can safely delete this file.
 
