@@ -1,0 +1,155 @@
+MEM_SIZE = 0x200
+
+#cpudef "CESCA"
+{
+	#bits 8
+	
+	#tokendef REG
+	{
+		R0 = 0b00
+		R1 = 0b01
+		R2 = 0b10
+		R3 = 0b11
+	}
+	
+	
+	; ARITHMETIC LOGIC OPERATIONS
+	
+	MOVE {Rd: REG}, {Ra: REG}				->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x00 }
+	ADD {Rd: REG}, {Ra: REG}, {Rb: REG}		->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x1 @ 0b00 @ Rb[1:0] }
+	SUB {Rd: REG}, {Ra: REG}, {Rb: REG}		->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
+	ADDC {Rd: REG}, {Ra: REG}, {Rb: REG}	->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x3 @ 0b00 @ Rb[1:0] }
+	SUBB {Rd: REG}, {Ra: REG}, {Rb: REG}	->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x4 @ 0b00 @ Rb[1:0] }
+	AND {Rd: REG}, {Ra: REG}, {Rb: REG}		->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x5 @ 0b00 @ Rb[1:0] }
+	OR {Rd: REG}, {Ra: REG}, {Rb: REG}		->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x6 @ 0b00 @ Rb[1:0] }
+	NOT {Rd: REG}, {Ra: REG}				->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x70 }
+	XOR {Rd: REG}, {Ra: REG}, {Rb: REG}		->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x8 @ 0b00 @ Rb[1:0] }
+	NAND {Rd: REG}, {Ra: REG}, {Rb: REG}	->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x9 @ 0b00 @ Rb[1:0] }
+	NOR {Rd: REG}, {Ra: REG}, {Rb: REG}		->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0xA @ 0b00 @ Rb[1:0] }
+	XNOR {Rd: REG}, {Ra: REG}, {Rb: REG}	->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0xB @ 0b00 @ Rb[1:0] }
+	SLL {Rd: REG}, {Ra: REG}				->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0xC0 }
+	SRL {Rd: REG}, {Ra: REG}				->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0xD0 }
+	SRA {Rd: REG}, {Ra: REG}				->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0xE0 }
+	ROL {Rd: REG}, {Ra: REG}				->	{ 0x0 @ Rd[1:0] @ Ra[1:0] @ 0xF0 }
+	
+	ADDI {Rd: REG}, {Ra: REG}, {Imm8: i8}	->	{ 0x1 @ Rd[1:0] @ Ra[1:0] @ Imm8[7:0] }
+	
+	ANDI {Rd: REG}, {Ra: REG}, {Imm8: i8}	->	{ 0x2 @ Rd[1:0] @ Ra[1:0] @ Imm8[7:0] }
+	
+	CMP-MOVE {Ra: REG}				->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x00 }
+	CMP-ADD {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x1 @ 0b00 @ Rb[1:0] }
+	CMP-SUB {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
+	CMP-ADDC {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x3 @ 0b00 @ Rb[1:0] }
+	CMP-SUBB {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x4 @ 0b00 @ Rb[1:0] }
+	CMP-AND {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x5 @ 0b00 @ Rb[1:0] }
+	CMP-OR {Ra: REG}, {Rb: REG}		->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x6 @ 0b00 @ Rb[1:0] }
+	CMP-NOT {Ra: REG}				->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x70 }
+	CMP-XOR {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x8 @ 0b00 @ Rb[1:0] }
+	CMP-NAND {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0x9 @ 0b00 @ Rb[1:0] }
+	CMP-NOR {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0xA @ 0b00 @ Rb[1:0] }
+	CMP-XNOR {Ra: REG}, {Rb: REG}	->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0xB @ 0b00 @ Rb[1:0] }
+	CMP-SLL {Ra: REG}				->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0xC0 }
+	CMP-SRL {Ra: REG}				->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0xD0 }
+	CMP-SRA {Ra: REG}				->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0xE0 }
+	CMP-ROL {Ra: REG}				->	{ 0x3 @ 0b00 @ Ra[1:0] @ 0xF0 }
+	
+	CMP-SUBI {Ra: REG}, {Imm8: i8}		->	{ 0x3 @ 0b01 @ Ra[1:0] @ Imm8[7:0] }
+	
+	CMP-ANDI {Ra: REG}, {Imm8: i8}		->	{ 0x3 @ 0b10 @ Ra[1:0] @ Imm8[7:0] }
+	
+	CLF	 	->	{ 0x3D40 }
+	
+	
+	; DATA MOVEMENT
+	
+	LI {Rd: REG}, {Imm8: i8}		->	{ 0x4 @ Rd[1:0] @ 0b00 @ Imm8[7:0] }
+	
+	ST-Addr {Ra: REG}, {Addr8: u8}	->	{ 0x5 @ 0b00 @ Ra[1:0] @ Addr8[7:0] }
+	
+	ST-Reg {Ra: REG}, {Rb: REG}		->	{ 0x5 @ 0b10 @ Ra[1:0] @ 0b000000 @ Rb[1:0] }
+	
+	LD-Addr {Rd: REG}, {Addr8: u8}	->	{ 0x6 @ Rd[1:0] @ 0b00 @ Addr8[7:0] }
+	
+	LD-Reg {Rd: REG}, {Ra: REG}		->	{ 0x7 @ Rd[1:0] @ Ra[1:0] @ 0x00 }
+	
+	PUSH {Ra: REG}		->	{ 0x8 @ 0b00 @ Ra[1:0] @ 0x00 }
+	
+	POP {Rd: REG}		->	{ 0x9 @ Rd[1:0] @ 0b00 @ 0x00 }
+	
+	
+	; JUMP INSTRUCTIONS
+	; All instructions take 2 bytes but the PC should only be increased by one. Declaring the adress as u9 and ignoring
+	; the last bit is a workaround for jumping to labels, but it won't work with immediates (you shouldn't be jumping to
+	; hardcoded addesses anyways). Setting the #bits to 16 messes up the data memory
+	
+	J {Addr8: u9}			->	{ 0xA0 @ Addr8[8:1] }
+	
+	JR {Ra: REG}			->	{ 0xA @ 0b01 @ Ra[1:0] @ 0x00 }
+	
+	JAL {Addr8: u9}			->	{ 0xA8 @ Addr8[8:1] }
+	
+	RET						->	{ 0xAC00 }
+	
+	JZ {Addr8: u9}			->	{ 0xB0 @ Addr8[8:1] }
+	
+	JNZ {Addr8: u9}			->	{ 0xB4 @ Addr8[8:1] }
+	
+	JC {Addr8: u9}			->	{ 0xB8 @ Addr8[8:1] }
+	
+	JNC {Addr8: u9}			->	{ 0xBC @ Addr8[8:1] }
+	
+	JV {Addr8: u9}			->	{ 0xC0 @ Addr8[8:1] }
+	
+	JNV {Addr8: u9}			->	{ 0xC4 @ Addr8[8:1] }
+	
+	JN {Addr8: u9}			->	{ 0xC8 @ Addr8[8:1] }
+	
+	JP {Addr8: u9}			->	{ 0xCC @ Addr8[8:1] }
+	
+	JSP {Addr8: u9}			->	{ 0xD0 @ Addr8[8:1] }
+	
+	JLEU {Addr8: u9}		->	{ 0xD4 @ Addr8[8:1] }
+	
+	JLT {Addr8: u9}			->	{ 0xD8 @ Addr8[8:1] }
+	
+	JLE {Addr8: u9}			->	{ 0xDC @ Addr8[8:1] }
+	
+	
+	; OUTPUT AND MISC.
+	
+	LCD-Com {Imm8: i8}		->	{ 0xE0 @ Imm8[7:0] }
+	
+	LCD-Imm {Imm8: i8}		->	{ 0xE4 @ Imm8[7:0] }
+	
+	LCD-Reg {Ra: REG}		->	{ 0xE @ 0b10 @ Ra[1:0] @ 0x00 }
+	
+	LCD-Mem {Addr8: u8}		->	{ 0xEC @ Addr8[7:0] }
+	
+	DEC-Reg {Ra: REG}		->	{ 0xF @ 0b00 @ Ra[1:0] @ 0x00 }
+	
+	DEC-Mem {Addr8: u8}		->	{ 0xF4 @ Addr8[7:0] }
+	
+	HLT		->	{ 0xF800 }
+	
+	NOP		->	{ 0xFFFF }
+	
+}
+
+; CESCA MEMORY BANKS:
+; Program memory: Banks 00 and 01 -> 512 bytes
+#bankdef "program"
+{
+    #addr 0x000
+    #size 0x200
+    #outp 0x000
+}
+
+; Data memory: Bank 10 -> 256 bytes
+#bankdef "data"
+{
+    #addr 0x000
+    #size 0x100
+    #outp 0x200
+}
+
+; Stack: Bank 11 (cannot be programmed directly)
