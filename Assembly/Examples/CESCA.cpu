@@ -1,5 +1,3 @@
-MEM_SIZE = 0x200
-
 #cpudef "CESCA"
 {
     #bits 8
@@ -66,15 +64,17 @@ MEM_SIZE = 0x200
     
     ST-Addr {Ra: REG}, {Addr8: u8}  ->  { 0x5 @ 0b00 @ Ra[1:0] @ Addr8[7:0] }
     
-    ST-Reg {Ra: REG}, {Rb: REG}     ->  { 0x5 @ 0b10 @ Ra[1:0] @ 0b000000 @ Rb[1:0] }
+    ST-Reg {Ra: REG}, {Rb: REG}     ->  { 0x5 @ 0b01 @ Ra[1:0] @ 0b000000 @ Rb[1:0] }
+    
+    PUSH {Ra: REG}                  ->  { 0x5 @ 0b10 @ Ra[1:0] @ 0x00 }
     
     LD-Addr {Rd: REG}, {Addr8: u8}  ->  { 0x6 @ Rd[1:0] @ 0b00 @ Addr8[7:0] }
     
     LD-Reg {Rd: REG}, {Ra: REG}     ->  { 0x7 @ Rd[1:0] @ Ra[1:0] @ 0x00 }
     
-    PUSH {Ra: REG}      ->  { 0x8 @ 0b00 @ Ra[1:0] @ 0x00 }
+    POP {Rd: REG}                   ->  { 0x8 @ Rd[1:0] @ 0b00 @ 0x00 }
     
-    POP {Rd: REG}       ->  { 0x9 @ Rd[1:0] @ 0b00 @ 0x00 }
+    SWAP {Rd: REG}, {Ra: REG}       ->  { 0x9 @ Rd[1:0] @ Ra[1:0] @ 0x00 }
     
     
     ; JUMP INSTRUCTIONS
@@ -123,15 +123,35 @@ MEM_SIZE = 0x200
     
     LCD-Reg {Ra: REG}       ->  { 0xE @ 0b10 @ Ra[1:0] @ 0x00 }
     
-    LCD-Mem {Addr8: u8}     ->  { 0xEC @ Addr8[7:0] }
+    LCD-Addr {Addr8: u8}    ->  { 0xEC @ Addr8[7:0] }
     
     DEC-Reg {Ra: REG}       ->  { 0xF @ 0b00 @ Ra[1:0] @ 0x00 }
     
-    DEC-Mem {Addr8: u8}     ->  { 0xF4 @ Addr8[7:0] }
+    DEC-Addr {Addr8: u8}    ->  { 0xF4 @ Addr8[7:0] }
     
     HLT     ->  { 0xF800 }
     
     NOP     ->  { 0xFFFF }
+    
+    
+    
+    
+    ; MACROS:
+    CMP {Ra: REG}, {Rb: REG}    ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
+    CMP {Ra: REG}, {Imm8: i8}   ->  { 0x3 @ 0b01 @ Ra[1:0] @ Imm8[7:0] }
+    TEST {Ra: REG}              ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x00 }
+    
+    INCR {Ra: REG}              ->  { 0x1 @ Ra[1:0] @ Ra[1:0] @ 0x01 }
+    DECR {Ra: REG}              ->  { 0x1 @ Ra[1:0] @ Ra[1:0] @ 0xFF }
+    SLLC {Rd: REG}, {Ra: REG}   ->  { 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x3 @ 0b00 @ Ra[1:0] }
+    SWAP {Ra: REG}              ->  { 0x9 @ Ra[1:0] @ Ra[1:0] @ 0x00 }
+    
+    LCD-Init                    ->  { 0xE0 @ 0x38 @ 0xE0 @ 0x0E @ 0xE0 @ 0x06 }
+    LCD-Clr                     ->  { 0xE0 @ 0x01 }
+    
+    JEQ {Addr8: u9}             ->  { 0xB0 @ Addr8[8:1] }
+    JNE {Addr8: u9}             ->  { 0xB4 @ Addr8[8:1] }
+    JLTU {Addr8: u9}            ->  { 0xB8 @ Addr8[8:1] }
     
 }
 
