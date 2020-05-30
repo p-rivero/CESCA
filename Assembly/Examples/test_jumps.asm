@@ -25,7 +25,7 @@ outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0
     LD-Reg R1, R2   ; Load second argument
     ADDI R2, R2, -1
     
-    JAL test_cond0
+    CALL test_cond0
     LD-Reg R1, R3   ; Load first output
     ADDI R3, R3, 1
     CMP-SUB R0, R1
@@ -36,7 +36,7 @@ outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0
     LD-Reg R1, R2   ; Load second argument
     ADDI R2, R2, 1
     
-    JAL test_cond1
+    CALL test_cond1
     LD-Reg R1, R3   ; Load second output
     ADDI R3, R3, 1
     CMP-SUB R0, R1

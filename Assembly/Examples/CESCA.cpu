@@ -86,7 +86,7 @@
     
     JR {Ra: REG}            ->  { 0xA @ 0b01 @ Ra[1:0] @ 0x00 }
     
-    JAL {Addr8: u9}         ->  { 0xA8 @ Addr8[8:1] }
+    CALL {Addr8: u9}         ->  { 0xA8 @ Addr8[8:1] }
     
     RET                     ->  { 0xAC00 }
     

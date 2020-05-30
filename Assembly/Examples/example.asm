@@ -36,7 +36,7 @@ global_label:
     LI R0, vector           ; Loads the address of vector[0]
     ADDI R0, R0, 2
     LD-Reg R1, R0           ; Loads 1 into R1 (vector[2])
-    JAL subroutine          ; Calls a subroutine. The arguments are in R0 and R1
+    CALL subroutine          ; Calls a subroutine. The arguments are in R0 and R1
     
     LCD-Reg R0              ; The returned value of the subroutine is in R0. Outputs the result to the LCD display
     ST-Reg R2, R0           ; Stores 5 into the address in R0. The value of R2 has been preserved by the subroutine
@@ -45,7 +45,7 @@ global_label:
 another_label:              ; From this point, .local_const and .local_label aren't available anymore
     MOVE R0, R1             ; Copies the contents of R1 to R0
     ST-Addr R2, result      ; Stores the contents of R2 to the reserved space in data memory
-    DEC-Mem vector + 4      ; Outputs -1 to the decimal display (vector[4])
+    DEC-Addr vector + 4      ; Outputs -1 to the decimal display (vector[4])
     J global_label
     
 

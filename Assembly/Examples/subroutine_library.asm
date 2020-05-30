@@ -123,10 +123,10 @@ div16:
     
     PUSH R0         ; Store lower numerator
     MOVE R0, R1     ; Use upper numerator as argument for 8 bit version
-    JAL div8
+    CALL div8
     
     SWAP R0         ; Store high result and restore lower numerator at same time
-    JAL div8_noHeader   ; Compute lower digits with remainder already set
+    CALL div8_noHeader   ; Compute lower digits with remainder already set
     
     POP R1          ; Restore high result
     RET
