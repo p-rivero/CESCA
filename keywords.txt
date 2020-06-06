@@ -1,85 +1,85 @@
-#############################################
-# Syntax Coloring Map For Assembly examples
-#############################################
+#######################################
+# Syntax Coloring Map For CESCA
+#######################################
 
-#############################################
-# Instructions (KEYWORD1)
-#############################################
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
 
-MOVE    KEYWORD1
-ADD     KEYWORD1
-SUB     KEYWORD1
-ADDC    KEYWORD1
-SUBB    KEYWORD1
-AND     KEYWORD1
-OR      KEYWORD1
-NOT     KEYWORD1
-XOR     KEYWORD1
-NAND    KEYWORD1
-NOR     KEYWORD1
-XNOR    KEYWORD1
-SLL     KEYWORD1
-SRL     KEYWORD1
-SRA     KEYWORD1
-ROL     KEYWORD1
-ADDI    KEYWORD1
-SUBI    KEYWORD1
-ANDI    KEYWORD1
-IN      KEYWORD1
-LI      KEYWORD1
-ST      KEYWORD1
-PUSH    KEYWORD1
-LD      KEYWORD1
-POP     KEYWORD1
-SWAP    KEYWORD1
-J       KEYWORD1
-JR      KEYWORD1
-CALL    KEYWORD1
-RET     KEYWORD1
-JZ      KEYWORD1
-JNZ     KEYWORD1
-JC      KEYWORD1
-JNC     KEYWORD1
-JV      KEYWORD1
-JNV     KEYWORD1
-JN      KEYWORD1
-JP      KEYWORD1
-JSP     KEYWORD1
-JLEU    KEYWORD1
-JLT     KEYWORD1
-JLE     KEYWORD1
-LCD     KEYWORD1
-OUT     KEYWORD1
-HLT     KEYWORD1
-NOP     KEYWORD1
+MOVE	KEYWORD1
+ADD	KEYWORD1
+SUB	KEYWORD1
+ADDC	KEYWORD1
+SUBB	KEYWORD1
+AND	KEYWORD1
+OR	KEYWORD1
+NOT	KEYWORD1
+XOR	KEYWORD1
+NAND	KEYWORD1
+NOR	KEYWORD1
+XNOR	KEYWORD1
+SLL	KEYWORD1
+SRL	KEYWORD1
+SRA	KEYWORD1
+ROL	KEYWORD1
+ADDI	KEYWORD1
+SUBI	KEYWORD1
+ANDI	KEYWORD1
+IN	KEYWORD1
+LI	KEYWORD1
+ST	KEYWORD1
+PUSH	KEYWORD1
+LD	KEYWORD1
+POP	KEYWORD1
+SWAP	KEYWORD1
+J	KEYWORD1
+JR	KEYWORD1
+CALL	KEYWORD1
+RET	KEYWORD1
+JZ	KEYWORD1
+JNZ	KEYWORD1
+JC	KEYWORD1
+JNC	KEYWORD1
+JV	KEYWORD1
+JNV	KEYWORD1
+JN	KEYWORD1
+JP	KEYWORD1
+JSP	KEYWORD1
+JLEU	KEYWORD1
+JLT	KEYWORD1
+JLE	KEYWORD1
+LCD	KEYWORD1
+OUT	KEYWORD1
+HLT	KEYWORD1
+NOP	KEYWORD1
 
-#############################################
-# Registers (KEYWORD2)
-#############################################
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
 
-R0      KEYWORD2
-R1      KEYWORD2
-R2      KEYWORD2
-R3      KEYWORD2
+R0	KEYWORD2
+R1	KEYWORD2
+R2	KEYWORD2
+R3	KEYWORD2
 
-#############################################
-# Instruction modes and macros (LITERAL1)
-#############################################
+#######################################
+# Constants (LITERAL1)
+#######################################
 
-Addr    LITERAL1
-Reg     LITERAL1
-Com     LITERAL1
-Imm     LITERAL1
-Ack     LITERAL1
+Addr	LITERAL1
+Reg	LITERAL1
+Com	LITERAL1
+Imm	LITERAL1
+Ack	LITERAL1
 
-CMP     LITERAL1
-TEST    LITERAL1
-INC     LITERAL1
-DEC     LITERAL1
-SLLC    LITERAL1
-Init    LITERAL1
-Clr     LITERAL1
-JNIN    LITERAL1
-JEQ     LITERAL1
-JNE     LITERAL1
-JLTU    LITERAL1
+CMP	LITERAL1
+TEST	LITERAL1
+INC	LITERAL1
+DEC	LITERAL1
+SLLC	LITERAL1
+Init	LITERAL1
+Clr	LITERAL1
+JNIN	LITERAL1
+JEQ	LITERAL1
+JNE	LITERAL1
+JLTU	LITERAL1
