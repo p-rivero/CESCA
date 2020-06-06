@@ -7,14 +7,14 @@
 using namespace std;
 
 
-#define HLT     0x010000    // Halt clock
-#define CLR     0x020000    // Clear microcode (start next instruction)
-#define OutEn   0x040000    // Enable output
-#define OUT_1   0x080000    // Output select (output to the bus)
-#define OUT_0   0x100000    //     00 = ALU, 01 = Mem, 10 = PC, 11 = SP
-#define IOp_2   0x200000    // Immediate operation
-#define IOp_1   0x400000    //     000 = Use Funct, 001 = ADDI, 010 = SUBI, 011 = ANDI
-#define IOp_0   0x800000    //     100 = A, 101 = b, 110 = Unused, 111 = Unused
+#define HLT     0x000001    // Halt clock
+#define CLR     0x000002    // Clear microcode (start next instruction)
+#define OutEn   0x000004    // Enable output
+#define OUT_1   0x000008    // Output select (output to the bus)
+#define OUT_0   0x000010    //     00 = ALU, 01 = Mem, 10 = PC, 11 = SP
+#define IOp_2   0x000020    // Immediate operation
+#define IOp_1   0x000040    //     000 = Use Funct, 001 = ADDI, 010 = SUBI, 011 = ANDI
+#define IOp_0   0x000080    //     100 = A, 101 = b, 110 = Unused, 111 = Unused
 #define MPg_1   0x000100    // Mem page
 #define MPg_0   0x000200    //     00 = Program Op, 01 = Progr. Arg, 10 = Data, 11 = Stack
 #define LdReg   0x000400    // Load Register (Rd)
@@ -23,14 +23,14 @@ using namespace std;
 #define AdrIn   0x002000    // Memory adress register in
 #define MemIn   0x004000    // Memory (RAM) in
 #define IrIn    0x008000    // Instruction register in
-#define PcIn    0x000001    // Program Counter in (Jump)
-#define PCpp    0x000002    // Increment Program Counter
-#define SPpp    0x000004    // Increment/decrement Stack Pointer
-#define DecIn   0x000008    // Decimal display in (load output register)
-#define LcdIn   0x000010    // LCD display in (enable LCD module)
-#define LcdDt   0x000020    // LCD data
-#define Un_0    0x000040    // Unused
-#define Un_1    0x000080    // Unused
+#define PcIn    0x010000    // Program Counter in (Jump)
+#define PCpp    0x020000    // Increment Program Counter
+#define SPpp    0x040000    // Increment/decrement Stack Pointer
+#define DecIn   0x080000    // Decimal display in (load output register)
+#define LcdIn   0x100000    // LCD display in (enable LCD module)
+#define LcdDt   0x200000    // LCD data
+#define Inp     0x400000    // Get input (input register out)
+#define Ack     0x800000    // Input acknowledge
 
 #define fetch_0 OutEn|OUT_1|AdrIn               // Move the PC to the MAR
 #define fetch_1 PCpp|OutEn|OUT_0|IrIn|LdTmp     // Fetch opcode to IR
@@ -48,7 +48,7 @@ using namespace std;
 const int size = 16*16*4*8;
 vector<unsigned int> content(size);
 
-// Size of tamplate: 16 (opcode) * 4 (opcode extra) * 8 (timesteps)
+// Size of template: 16 (opcode) * 4 (opcode extra) * 8 (timesteps)
 const int TEMPL_SIZE = 16*4*8;
 const vector<unsigned int> TEMPLATE = {
     fetch_0,    fetch_1,    fetch_2|LdTmp,  OutEn|LdReg|LdFlg,                      CLR,    0, 0, 0,        // 000000 - ALU OPERATIONS
@@ -61,29 +61,31 @@ const vector<unsigned int> TEMPLATE = {
     fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg,        CLR,    0, 0, 0,        // 000110 - ADDI
     fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg,        CLR,    0, 0, 0,        // 000111 - ADDI
     
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|CtrlAndi|LdFlg,     CLR,    0, 0, 0,        // 001000 - ANDI
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|CtrlAndi|LdFlg,     CLR,    0, 0, 0,        // 001001 - ANDI
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|CtrlAndi|LdFlg,     CLR,    0, 0, 0,        // 001010 - ANDI
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|CtrlAndi|LdFlg,     CLR,    0, 0, 0,        // 001011 - ANDI
+    fetch_0,    fetch_1,    fetch_2|LdTmp|LdFlg,                                    CLR,    0, 0, 0, 0,     // 001000 - CMP-OP
     
-    fetch_0,    fetch_1,    fetch_2|LdTmp|LdFlg,                                    CLR,    0, 0, 0, 0,     // 001100 - CMP-OP
+    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2|IOp_1|LdFlg,                        CLR,    0, 0, 0, 0,     // 001001 - CMP-SUBI
     
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2|IOp_1|LdFlg,                        CLR,    0, 0, 0, 0,     // 001101 - CMP-SUBI
+    fetch_0,    fetch_1,    fetch_2|LdTmp|CtrlAndi|LdFlg,                           CLR,    0, 0, 0, 0,     // 001010 - CMP-ANDI
     
-    fetch_0,    fetch_1,    fetch_2|LdTmp|CtrlAndi|LdFlg,                           CLR,    0, 0, 0, 0,     // 001110 - CMP-ANDI
+    fetch_0,    fetch_1,    Inp|LdTmp|IOp_2,    0,  fetch_2|LdTmp|CtrlAndi|LdFlg,   CLR,    0, 0,           // 001011 - CMP-IN
     
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    fetch_2|LdTmp|CtrlA|LdFlg,      CLR,    0, 0, 0,        // 001111 - CLF
+    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001100 - LI
+    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001101 - LI
+    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001110 - LI
+    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001111 - LI
     
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 010000 - LI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 010001 - LI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 010010 - LI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 010011 - LI
+    fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010000 - IN
+    fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010001 - IN
+    fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010010 - IN
+    fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010011 - IN
     
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|CtrlB|MPg_1|MemIn,                CLR,    0, 0, 0,        // 010100 - ST-Addr
+    fetch_0,    fetch_1,    Ack,                                                    CLR,    0, 0, 0, 0,     // 010100 - IN-Ack
+    
     fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|CtrlB|MPg_1|MemIn,                CLR,    0, 0, 0,        // 010101 - ST-Addr
     
     fetch_0,    fetch_1,    fetch_2|LdTmp,  OutEn|CtrlB|AdrIn,  OutEn|CtrlA|MPg_1|MemIn,    CLR,    0, 0,   // 010110 - ST-Reg
-    fetch_0,    fetch_1,    fetch_2|LdTmp,  OutEn|CtrlB|AdrIn,  OutEn|CtrlA|MPg_1|MemIn,    CLR,    0, 0,   // 010111 - ST-Reg
+    
+    fetch_0,    fetch_1,    SPpp|IOp_2,     OutEn|StackOut|AdrIn,   OutEn|CtrlB|StackMem|MemIn,     CLR,    0, 0,   // 010111 - PUSH
     
     fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,                CLR,    0, 0, 0,        // 011000 - LD-Addr
     fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,                CLR,    0, 0, 0,        // 011001 - LD-Addr
@@ -94,29 +96,29 @@ const vector<unsigned int> TEMPLATE = {
     fetch_0,    fetch_1,    OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0,        // 011101 - LD-Reg
     fetch_0,    fetch_1,    OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0,        // 011110 - LD-Reg
     fetch_0,    fetch_1,    OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0,        // 011111 - LD-Reg
+
     
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|SPpp|CtrlB|StackMem|MemIn,    CLR,    0, 0, 0,    // 100000 - PUSH
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|SPpp|CtrlB|StackMem|MemIn,    CLR,    0, 0, 0,    // 100001 - PUSH
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|SPpp|CtrlB|StackMem|MemIn,    CLR,    0, 0, 0,    // 100010 - PUSH
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|SPpp|CtrlB|StackMem|MemIn,    CLR,    0, 0, 0,    // 100011 - PUSH
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0,        // 100000 - POP
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0,        // 100001 - POP
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0,        // 100010 - POP
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0,        // 100011 - POP
     
-    fetch_0,    fetch_1,    SPpp,   OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg,  CLR,    0, 0,       // 100100 - POP
-    fetch_0,    fetch_1,    SPpp,   OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg,  CLR,    0, 0,       // 100101 - POP
-    fetch_0,    fetch_1,    SPpp,   OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg,  CLR,    0, 0,       // 100110 - POP
-    fetch_0,    fetch_1,    SPpp,   OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg,  CLR,    0, 0,       // 100111 - POP
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn,     CLR,    0,  0,          // 100100 - SWAP
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn,     CLR,    0,  0,          // 100101 - SWAP
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn,     CLR,    0,  0,          // 100110 - SWAP
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn,     CLR,    0,  0,          // 100111 - SWAP
     
     fetch_0,    fetch_1,    fetch_2|PcIn,                                           CLR,    0, 0, 0, 0,     // 101000 - J
     
     fetch_0,    fetch_1,    OutEn|CtrlB|PcIn,                                       CLR,    0, 0, 0, 0,     // 101001 - JR
     
-    fetch_0,    fetch_1,    fetch_2|IOp_2|LdTmp,    OutEn|StackOut|AdrIn,
-                OutEn|OUT_1|StackMem|MemIn,     OutEn|SPpp|CtrlB|PcIn,              CLR,    0,              // 101010 - JAL
-                
-    fetch_0,    fetch_1,    SPpp,   OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|PcIn,   CLR,    0, 0,       // 101011 - RET
+    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2|SPpp,   OutEn|StackOut|AdrIn,   OutEn|OUT_1|StackMem|MemIn, OutEn|CtrlB|PcIn,   CLR,    0,  // 101010 - CALL
     
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 101100 - JZ
+    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|PcIn|SPpp, CLR,    0, 0, 0,        // 101011 - RET
     
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 101101 - JNZ
+    fetch_0,    fetch_1,    CLR,  /*   Will get changed by fetch_2|PcIn if     */   CLR,    0, 0, 0, 0,     // 101100 - JZ
+    
+    fetch_0,    fetch_1,    CLR,  /*   the flags are in the correct state.     */   CLR,    0, 0, 0, 0,     // 101101 - JNZ
     
     fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 101110 - JC
     
@@ -146,9 +148,9 @@ const vector<unsigned int> TEMPLATE = {
     
     fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|LcdIn|LcdDt,          CLR,    0, 0, 0,        // 111011 - LCD-Mem
     
-    fetch_0,    fetch_1,    OutEn|CtrlB|DecIn,                                      CLR,    0, 0, 0, 0,     // 111100 - DEC-Reg
+    fetch_0,    fetch_1,    OutEn|CtrlB|DecIn,                                      CLR,    0, 0, 0, 0,     // 111100 - OUT-Reg
     
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|DecIn,                CLR,    0, 0, 0,        // 111101 - DEC-Mem
+    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|DecIn,                CLR,    0, 0, 0,        // 111101 - OUT-Mem
     
     fetch_0,    fetch_1,    HLT,                                                    0, 0, 0, 0, 0,          // 111110 - HLT
     
@@ -218,6 +220,7 @@ void write_file(int filenum) {
     cout << "Writing arduino file " << filenum << endl;
     outputFile.open ("eeprom_contents" + to_string(filenum) + ".h");
     
+    outputFile << dec << "const PROGMEM uint8_t CONTENTS_SIZE = " << size << ";" << endl;
     outputFile << "const PROGMEM uint8_t EEPROM_CONTENTS[] = {";
     for (int i = 0; i < size/32; i++) {
         outputFile << endl << "\t";
@@ -226,21 +229,19 @@ void write_file(int filenum) {
             if (j < 31 or i < size/32 - 1) outputFile << ", ";
         }
     }
-    outputFile << endl << "}" << endl;
+    outputFile << endl << "};" << endl;
     
     outputFile.close();
 }
 
 int main() {
-    cout << "Generating file" << endl;
+    cout << "Generating file..." << endl;
     generate();
     
-    write_file(0);
-    write_file(1);
-    write_file(2);
+    for (int i = 0; i < 3; i++)
+        write_file(i);
     
-    cout << "WARNING: File 0 contains the least significant bits of the control word. File 2 contains HLT, CLR, ..." << endl;
+    cout << "File 0 contains HLT, CLR...,  File 1 contains MemPag, LdReg..., File 2 contains PcIn, PC++..." << endl;
     
     cout << "Done." << endl;
 }
-

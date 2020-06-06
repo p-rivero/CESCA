@@ -32,41 +32,43 @@
     
     ADDI {Rd: REG}, {Ra: REG}, {Imm8: i8}   ->  { 0x1 @ Rd[1:0] @ Ra[1:0] @ Imm8[7:0] }
     
-    ANDI {Rd: REG}, {Ra: REG}, {Imm8: i8}   ->  { 0x2 @ Rd[1:0] @ Ra[1:0] @ Imm8[7:0] }
+    CMP-MOVE {Ra: REG}              ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x00 }
+    CMP-ADD {Ra: REG}, {Rb: REG}    ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x1 @ 0b00 @ Rb[1:0] }
+    CMP-SUB {Ra: REG}, {Rb: REG}    ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
+    CMP-ADDC {Ra: REG}, {Rb: REG}   ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x3 @ 0b00 @ Rb[1:0] }
+    CMP-SUBB {Ra: REG}, {Rb: REG}   ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x4 @ 0b00 @ Rb[1:0] }
+    CMP-AND {Ra: REG}, {Rb: REG}    ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x5 @ 0b00 @ Rb[1:0] }
+    CMP-OR {Ra: REG}, {Rb: REG}     ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x6 @ 0b00 @ Rb[1:0] }
+    CMP-NOT {Ra: REG}               ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x70 }
+    CMP-XOR {Ra: REG}, {Rb: REG}    ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x8 @ 0b00 @ Rb[1:0] }
+    CMP-NAND {Ra: REG}, {Rb: REG}   ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x9 @ 0b00 @ Rb[1:0] }
+    CMP-NOR {Ra: REG}, {Rb: REG}    ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0xA @ 0b00 @ Rb[1:0] }
+    CMP-XNOR {Ra: REG}, {Rb: REG}   ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0xB @ 0b00 @ Rb[1:0] }
+    CMP-SLL {Ra: REG}               ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0xC0 }
+    CMP-SRL {Ra: REG}               ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0xD0 }
+    CMP-SRA {Ra: REG}               ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0xE0 }
+    CMP-ROL {Ra: REG}               ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0xF0 }
     
-    CMP-MOVE {Ra: REG}              ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x00 }
-    CMP-ADD {Ra: REG}, {Rb: REG}    ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x1 @ 0b00 @ Rb[1:0] }
-    CMP-SUB {Ra: REG}, {Rb: REG}    ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
-    CMP-ADDC {Ra: REG}, {Rb: REG}   ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x3 @ 0b00 @ Rb[1:0] }
-    CMP-SUBB {Ra: REG}, {Rb: REG}   ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x4 @ 0b00 @ Rb[1:0] }
-    CMP-AND {Ra: REG}, {Rb: REG}    ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x5 @ 0b00 @ Rb[1:0] }
-    CMP-OR {Ra: REG}, {Rb: REG}     ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x6 @ 0b00 @ Rb[1:0] }
-    CMP-NOT {Ra: REG}               ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x70 }
-    CMP-XOR {Ra: REG}, {Rb: REG}    ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x8 @ 0b00 @ Rb[1:0] }
-    CMP-NAND {Ra: REG}, {Rb: REG}   ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x9 @ 0b00 @ Rb[1:0] }
-    CMP-NOR {Ra: REG}, {Rb: REG}    ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0xA @ 0b00 @ Rb[1:0] }
-    CMP-XNOR {Ra: REG}, {Rb: REG}   ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0xB @ 0b00 @ Rb[1:0] }
-    CMP-SLL {Ra: REG}               ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0xC0 }
-    CMP-SRL {Ra: REG}               ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0xD0 }
-    CMP-SRA {Ra: REG}               ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0xE0 }
-    CMP-ROL {Ra: REG}               ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0xF0 }
+    CMP-SUBI {Ra: REG}, {Imm8: i8}      ->  { 0x2 @ 0b01 @ Ra[1:0] @ Imm8[7:0] }
     
-    CMP-SUBI {Ra: REG}, {Imm8: i8}      ->  { 0x3 @ 0b01 @ Ra[1:0] @ Imm8[7:0] }
+    CMP-ANDI {Ra: REG}, {Imm8: i8}      ->  { 0x2 @ 0b10 @ Ra[1:0] @ Imm8[7:0] }
     
-    CMP-ANDI {Ra: REG}, {Imm8: i8}      ->  { 0x3 @ 0b10 @ Ra[1:0] @ Imm8[7:0] }
-    
-    CLF     ->  { 0x3D40 }
+    CMP-IN {Imm8: i8}                   ->  { 0x2C @ Imm8[7:0] }
     
     
     ; DATA MOVEMENT
     
-    LI {Rd: REG}, {Imm8: i8}        ->  { 0x4 @ Rd[1:0] @ 0b00 @ Imm8[7:0] }
+    LI {Rd: REG}, {Imm8: i8}        ->  { 0x3 @ Rd[1:0] @ 0b00 @ Imm8[7:0] }
     
-    ST-Addr {Ra: REG}, {Addr8: u8}  ->  { 0x5 @ 0b00 @ Ra[1:0] @ Addr8[7:0] }
+    IN {Rd: REG}                    ->  { 0x4 @ Rd[1:0] @ 0b00 @ 0x00 }
     
-    ST-Reg {Ra: REG}, {Rb: REG}     ->  { 0x5 @ 0b01 @ Ra[1:0] @ 0b000000 @ Rb[1:0] }
+    IN-Ack {Rd: REG}                ->  { 0x5000 }
     
-    PUSH {Ra: REG}                  ->  { 0x5 @ 0b10 @ Ra[1:0] @ 0x00 }
+    ST-Addr {Ra: REG}, {Addr8: u8}  ->  { 0x5 @ 0b01 @ Ra[1:0] @ Addr8[7:0] }
+    
+    ST-Reg {Ra: REG}, {Rb: REG}     ->  { 0x5 @ 0b10 @ Ra[1:0] @ 0b000000 @ Rb[1:0] }
+    
+    PUSH {Ra: REG}                  ->  { 0x5 @ 0b11 @ Ra[1:0] @ 0x00 }
     
     LD-Addr {Rd: REG}, {Addr8: u8}  ->  { 0x6 @ Rd[1:0] @ 0b00 @ Addr8[7:0] }
     
@@ -125,9 +127,9 @@
     
     LCD-Addr {Addr8: u8}    ->  { 0xEC @ Addr8[7:0] }
     
-    DEC-Reg {Ra: REG}       ->  { 0xF @ 0b00 @ Ra[1:0] @ 0x00 }
+    OUT-Reg {Ra: REG}       ->  { 0xF @ 0b00 @ Ra[1:0] @ 0x00 }
     
-    DEC-Addr {Addr8: u8}    ->  { 0xF4 @ Addr8[7:0] }
+    OUT-Addr {Addr8: u8}    ->  { 0xF4 @ Addr8[7:0] }
     
     HLT     ->  { 0xF800 }
     
@@ -137,12 +139,12 @@
     
     
     ; MACROS:
-    CMP {Ra: REG}, {Rb: REG}    ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
-    CMP {Ra: REG}, {Imm8: i8}   ->  { 0x3 @ 0b01 @ Ra[1:0] @ Imm8[7:0] }
-    TEST {Ra: REG}              ->  { 0x3 @ 0b00 @ Ra[1:0] @ 0x00 }
+    CMP {Ra: REG}, {Rb: REG}    ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
+    CMP {Ra: REG}, {Imm8: i8}   ->  { 0x2 @ 0b01 @ Ra[1:0] @ Imm8[7:0] }
+    TEST {Ra: REG}              ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x00 }
     
-    INCR {Ra: REG}              ->  { 0x1 @ Ra[1:0] @ Ra[1:0] @ 0x01 }
-    DECR {Ra: REG}              ->  { 0x1 @ Ra[1:0] @ Ra[1:0] @ 0xFF }
+    INC {Ra: REG}               ->  { 0x1 @ Ra[1:0] @ Ra[1:0] @ 0x01 }
+    DEC {Ra: REG}               ->  { 0x1 @ Ra[1:0] @ Ra[1:0] @ 0xFF }
     SLLC {Rd: REG}, {Ra: REG}   ->  { 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x3 @ 0b00 @ Ra[1:0] }
     SWAP {Ra: REG}              ->  { 0x9 @ Ra[1:0] @ Ra[1:0] @ 0x00 }
     
@@ -152,6 +154,7 @@
     JEQ {Addr8: u9}             ->  { 0xB0 @ Addr8[8:1] }
     JNE {Addr8: u9}             ->  { 0xB4 @ Addr8[8:1] }
     JLTU {Addr8: u9}            ->  { 0xB8 @ Addr8[8:1] }
+    JNIN {Addr8: u9}            ->  { 0x2CFFB0 @ Addr8[8:1] }
     
 }
 

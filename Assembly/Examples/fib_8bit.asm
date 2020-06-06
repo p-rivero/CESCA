@@ -6,10 +6,10 @@
     LI R1, 1
     
 fib:
-    DEC-Reg R1
+    OUT-Reg R1
     ADD R0, R0, R1
     JC .end
-    DEC-Reg R0
+    OUT-Reg R0
     ADD R1, R0, R1
     JNC fib
 

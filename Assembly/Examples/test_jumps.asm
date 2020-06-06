@@ -10,7 +10,7 @@
 #bank "data"
 ; Arguments to be tested:
 args:       #d8 0, 0,     25, 25,   -1, -1,   0, 100,   5, 127,   10, -10,  0, -128,  -1, -128,  -128, 0,  -128, 1,  2, 1,     -2, -1
-; Expected outputs:
+; Expected outputs (inverted, since the method I had before used inverted results, and it's easier to just add a NOT instruction to the new method):
 outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0xA4,  5, 0x58,   5, 0x63,  5, 0x9B,  5, 0x58,  6, 0x67
 
 #bank "program"
@@ -21,103 +21,103 @@ outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0
 
 .loop:
     LD-Reg R0, R2   ; Load first argument
-    ADDI R2, R2, 1
+    INC R2
     LD-Reg R1, R2   ; Load second argument
-    ADDI R2, R2, -1
+    DEC R2
     
     CALL test_cond0
     LD-Reg R1, R3   ; Load first output
-    ADDI R3, R3, 1
-    CMP-SUB R0, R1
-    JNZ error
+    INC R3
+    CMP R0, R1
+    JNE error
     
     LD-Reg R0, R2   ; Load first argument
-    ADDI R2, R2, 1
+    INC R2
     LD-Reg R1, R2   ; Load second argument
-    ADDI R2, R2, 1
+    INC R2
     
     CALL test_cond1
     LD-Reg R1, R3   ; Load second output
-    ADDI R3, R3, 1
-    CMP-SUB R0, R1
-    JNZ error
+    INC R3
+    CMP R0, R1
+    JNE error
     
-    CMP-SUBI R2, outputs - args ; Check if all tests have been performed
-    JNZ .loop
+    CMP R2, outputs - args ; Check if all tests have been performed
+    JNE .loop
     
     LI R0, 1        ; Tests passed! Output a 1
-    DEC-Reg R0
+    OUT-Reg R0
     HLT
     
     
 ; Called if a test fails
 error:
     LI R0, 0xFF
-    DEC-Reg R0
+    OUT-Reg R0
     HLT
 
 
 test_cond0:     
     PUSH R2
-    LI R2, 0x0F
-        
+    LI R2, 0xF0
+    
     CMP-SUB R0, R1
     JNC (pc + 4)
-    ANDI R2, R2, 0b11111110
+    ADDI R2, R2, 0b00000001
     
     CMP-SUB R0, R1
     JC (pc + 4)
-    ANDI R2, R2, 0b11111101
+    ADDI R2, R2, 0b00000010
     
     CMP-SUB R0, R1
     JNZ (pc + 4)
-    ANDI R2, R2, 0b11111011
+    ADDI R2, R2, 0b00000100
     
     CMP-SUB R0, R1
     JZ (pc + 4)
-    ANDI R2, R2, 0b11110111
+    ADDI R2, R2, 0b00001000
     
-    MOVE R0, R2
+    NOT R0, R2  ; Invert results
     POP R2
     RET
 
 test_cond1:     
     PUSH R2
-    LI R2, 0xFF
+    LI R2, 0x00
     
     CMP-SUB R0, R1
     JLE (pc + 4)
-    ANDI R2, R2, 0b11111110
+    ADDI R2, R2, 0b00000001
     
     CMP-SUB R0, R1
     JLT (pc + 4)
-    ANDI R2, R2, 0b11111101
+    ADDI R2, R2, 0b00000010
     
     CMP-SUB R0, R1
     JLEU (pc + 4)
-    ANDI R2, R2, 0b11111011
+    ADDI R2, R2, 0b00000100
     
     CMP-SUB R0, R1
     JSP (pc + 4)
-    ANDI R2, R2, 0b11110111
+    ADDI R2, R2, 0b00001000
     
     CMP-SUB R0, R1
     JP (pc + 4)
-    ANDI R2, R2, 0b11101111
+    ADDI R2, R2, 0b00010000
     
     CMP-SUB R0, R1
     JN (pc + 4)
-    ANDI R2, R2, 0b11011111
+    ADDI R2, R2, 0b00100000
     
     CMP-SUB R0, R1
     JNV (pc + 4)
-    ANDI R2, R2, 0b10111111
+    ADDI R2, R2, 0b01000000
     
     CMP-SUB R0, R1
     JV (pc + 4)
-    ANDI R2, R2, 0b01111111
+    ADDI R2, R2, 0b10000000
     
-    MOVE R0, R2
+    NOT R0, R2  ; Invert results
     POP R2
     RET
     
