@@ -55,4 +55,4 @@ The microcode of the computer is stored in 3 EEPROMs for a total of 24 control s
 ##
 
 The code assumes that the finished pin layout and connections for the EEPROM are the following:
-![Connections](https://github.com/p-rivero/CESCA/blob/master/CESC%20Computer/EEPROM%20Programmer/Microcode/Pin%20connections.jpg?raw=true)
+![Connections](https://github.com/p-rivero/CESCA/blob/master/CESC%20Computer/EEPROM%20Programmer/Microcode/Pin%20connections.jpg?raw=true =700x)
