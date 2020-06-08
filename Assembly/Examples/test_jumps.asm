@@ -16,8 +16,8 @@ outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0
 #bank "program"
 
 ; Main program
-    LI R2, args
-    LI R3, outputs
+    MOVI R2, args
+    MOVI R3, outputs
 
 .loop:
     LD-Reg R0, R2   ; Load first argument
@@ -45,21 +45,21 @@ outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0
     CMP R2, outputs - args ; Check if all tests have been performed
     JNE .loop
     
-    LI R0, 1        ; Tests passed! Output a 1
+    MOVI R0, 1      ; Tests passed! Output a 1
     OUT-Reg R0
     HLT
     
     
 ; Called if a test fails
 error:
-    LI R0, 0xFF
+    MOVI R0, 0xFF
     OUT-Reg R0
     HLT
 
 
 test_cond0:     
     PUSH R2
-    LI R2, 0xF0
+    MOVI R2, 0xF0
     
     CMP-SUB R0, R1
     JNC (pc + 4)
@@ -83,7 +83,7 @@ test_cond0:
 
 test_cond1:     
     PUSH R2
-    LI R2, 0x00
+    MOVI R2, 0x00
     
     CMP-SUB R0, R1
     JLE (pc + 4)

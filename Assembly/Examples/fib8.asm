@@ -2,8 +2,8 @@
 
 ; FIBONACCI SEQUENCE
 #bank "program"
-    LI R0, 0
-    LI R1, 1
+    MOVI R0, 0
+    MOVI R1, 1
     
 fib:
     OUT-Reg R1
@@ -14,5 +14,5 @@ fib:
     JNC fib
 
 .end:
-    HLT ; Stops at the last 8-bit number in the sequence (233)
+    HLT     ; Stops at the last 8-bit number in the sequence (233)
     

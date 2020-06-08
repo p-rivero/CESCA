@@ -4,7 +4,7 @@
 ; Reads inputs from the keyboard and displays them on the LCD screen.
 
 #bank "program"
-    LI R0, 0
+    MOVI R0, 0
     LCD-Init
     
 poll:

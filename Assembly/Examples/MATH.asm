@@ -18,8 +18,8 @@ _BEGIN_MATH_LIB:
 
 mult8:
     PUSH R2         ; Store protected register
-    MOVE R2, R0     ; Move n to R2
-    LI R0, 0        ; R0 contains the result
+    MOV R2, R0      ; Move n to R2
+    MOVI R0, 0      ; R0 contains the result
     JZ .return      ; if n == 0, return 0
     
 .m_loop:
@@ -44,7 +44,7 @@ mult8:
 ; Logarithmic complexity. Absolute worst case: ~340 clock cycles
 
 mult16:
-    LI R1, 0        ; Set the result to 0
+    MOVI R1, 0      ; Set the result to 0
     PUSH R1         ; Set the result to 0 (lower bits)
     
     TEST R0
@@ -77,12 +77,12 @@ mult16:
 ; Adapted from James Sharman's video
 
 div8:
-    LI R3, 0        ; Initialize remainder
+    MOVI R3, 0      ; Initialize remainder
     
 div8_noHeader:
-    LI R1, 8
+    MOVI R1, 8
     PUSH R1         ; Create counter in stack
-    LI R1, 0        ; Initialize quotient
+    MOVI R1, 0      ; Initialize quotient
 
 .d_loop:
     SLL R0, R0      ; Shift top bit of n
@@ -101,7 +101,7 @@ div8_noHeader:
     JNZ .d_loop
     
     POP R0          ; Destroy counter in stack
-    MOVE R0, R1
+    MOV R0, R1
     RET
 
 
@@ -117,7 +117,7 @@ div16:
     JZ div8         ; If upper bits are 0, use 8 bit version
     
     PUSH R0         ; Store lower numerator
-    MOVE R0, R1     ; Use upper numerator as argument for 8 bit version
+    MOV R0, R1      ; Use upper numerator as argument for 8 bit version
     CALL div8
     
     SWAP R0         ; Store high result and restore lower numerator at same time

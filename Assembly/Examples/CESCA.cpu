@@ -13,7 +13,7 @@
     
     ; ARITHMETIC LOGIC OPERATIONS
     
-    MOVE {Rd: REG}, {Ra: REG}               ->  { 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x00 }
+    MOV {Rd: REG}, {Ra: REG}                ->  { 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x00 }
     ADD {Rd: REG}, {Ra: REG}, {Rb: REG}     ->  { 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x1 @ 0b00 @ Rb[1:0] }
     SUB {Rd: REG}, {Ra: REG}, {Rb: REG}     ->  { 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
     ADDC {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  { 0x0 @ Rd[1:0] @ Ra[1:0] @ 0x3 @ 0b00 @ Rb[1:0] }
@@ -32,7 +32,7 @@
     
     ADDI {Rd: REG}, {Ra: REG}, {Imm8: i8}   ->  { 0x1 @ Rd[1:0] @ Ra[1:0] @ Imm8[7:0] }
     
-    CMP-MOVE {Ra: REG}              ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x00 }
+    CMP-MOV {Ra: REG}               ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x00 }
     CMP-ADD {Ra: REG}, {Rb: REG}    ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x1 @ 0b00 @ Rb[1:0] }
     CMP-SUB {Ra: REG}, {Rb: REG}    ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0] }
     CMP-ADDC {Ra: REG}, {Rb: REG}   ->  { 0x2 @ 0b00 @ Ra[1:0] @ 0x3 @ 0b00 @ Rb[1:0] }
@@ -58,11 +58,11 @@
     
     ; DATA MOVEMENT
     
-    LI {Rd: REG}, {Imm8: i8}        ->  { 0x3 @ Rd[1:0] @ 0b00 @ Imm8[7:0] }
+    MOVI {Rd: REG}, {Imm8: i8}      ->  { 0x3 @ Rd[1:0] @ 0b00 @ Imm8[7:0] }
     
     IN {Rd: REG}                    ->  { 0x4 @ Rd[1:0] @ 0b00 @ 0x00 }
     
-    IN-Ack {Rd: REG}                ->  { 0x5000 }
+    IN-Ack                          ->  { 0x5000 }
     
     ST-Addr {Ra: REG}, {Addr8: u8}  ->  { 0x5 @ 0b01 @ Ra[1:0] @ Addr8[7:0] }
     
@@ -88,7 +88,7 @@
     
     JR {Ra: REG}            ->  { 0xA @ 0b01 @ Ra[1:0] @ 0x00 }
     
-    CALL {Addr8: u9}         ->  { 0xA8 @ Addr8[8:1] }
+    CALL {Addr8: u9}        ->  { 0xA8 @ Addr8[8:1] }
     
     RET                     ->  { 0xAC00 }
     

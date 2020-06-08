@@ -17,8 +17,8 @@ mult16_naive_B:     #res 2      ; Second 16 bit operand for mult16_naive
 
 mult8_naive: 
     PUSH R2         ; Store protected register
-    MOVE R2, R0     ; Move n to R2
-    LI R0, 0        ; R0 contains the result
+    MOV R2, R0      ; Move n to R2
+    MOVI R0, 0      ; R0 contains the result
     JZ .return      ; if n == 0, return 0
     
 .m_loop:
@@ -45,8 +45,8 @@ mult8_naive:
 mult16_naive:
     PUSH R2
     PUSH R3
-    LI R0, 0            ; R0/R1 contains the sum
-    LI R1, 0
+    MOVI R0, 0          ; R0/R1 contains the sum
+    MOVI R1, 0
     LD-Addr R2, mult16_naive_B      ; Load B operand to R2/R3
     LD-Addr R3, mult16_naive_B + 1
     
@@ -87,7 +87,7 @@ mult16_naive:
     ROL R0, R0 ; Repeat this line n times
     ; ...
     
-    LI R1, (2**n - 1) ; 2**n is the nth power of 2
+    MOVI R1, (2**n - 1) ; 2**n is the nth power of 2
     AND R0, R0, R1
     
 ; Example (as a subroutine)     Arguments: R0 = N     Returns: R0 = N >> 6
@@ -95,7 +95,7 @@ FastSRL_6:
     ROL R0, R0
     ROL R0, R0
 
-    LI R1, 3
+    MOVI R1, 3
     AND R0, R0, R1
     RET
     

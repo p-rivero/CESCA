@@ -7,7 +7,7 @@ NUM = 5     ; The number from which to compute the factorial. Result = (NUM)!
 
 #bank "program"
 
-    LI R0, NUM
+    MOVI R0, NUM
     CALL factorial
     OUT-Reg R0      ; Output result
     HLT
@@ -16,18 +16,18 @@ NUM = 5     ; The number from which to compute the factorial. Result = (NUM)!
 ; FACTORIAL SUBROUTINE      Arguments: R0 = n     Returns: R0 = n!
 factorial: 
     PUSH R2         ; Store protected register
-    MOVE R2, R0     ; Save number for later
+    MOV R2, R0      ; Save number for later
     
     DEC R0          ; Decrement n
     JP .recursion   ; if (n-1 >= 0) go to recursive call
     
-    LI R0, 1    ; 0! is 1
+    MOVI R0, 1      ; 0! is 1
     J .return
 
 .recursion:
     CALL factorial  ; Compute (n - 1)! (leaves result in R0)
     
-    MOVE R1, R2     ; Get n from protected register
+    MOV R1, R2      ; Get n from protected register
     CALL mult8      ; n! = n * (n - 1)!
     
 .return:

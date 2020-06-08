@@ -69,10 +69,10 @@ const vector<unsigned int> TEMPLATE = {
     
     fetch_0,    fetch_1,    Inp|LdTmp|IOp_2,    0,  fetch_2|LdTmp|CtrlAndi|LdFlg,   CLR,    0, 0,           // 001011 - CMP-IN
     
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001100 - LI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001101 - LI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001110 - LI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001111 - LI
+    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001100 - MOVI
+    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001101 - MOVI
+    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001110 - MOVI
+    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001111 - MOVI
     
     fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010000 - IN
     fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010001 - IN
