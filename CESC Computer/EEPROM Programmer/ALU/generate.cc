@@ -118,10 +118,10 @@ int main() {
 
     outputFile.open ("eeprom_contents.h");
     cout << "Writing arduino format" << endl;
-    outputFile << dec << "const PROGMEM uint8_t CONTENTS_SIZE = " << TOTAL_SIZE << ";" << endl;
-    outputFile << "const PROGMEM uint8_t EEPROM_CONTENTS[] = {";
+    outputFile << dec << "const PROGMEM int CONTENTS_SIZE = " << TOTAL_SIZE << ";" << endl;
+    outputFile << "const PROGMEM byte EEPROM_CONTENTS[] = {";
     for (int i = 0; i < TOTAL_SIZE/32; i++) {
-        outputFile << endl << "\t";
+        outputFile << endl << "    ";
         for (int j = 0; j < 32; j++) {
             outputFile << dec << int(content[32*i + j]);
             if (j < 31 or i < TOTAL_SIZE/32 - 1) outputFile << ", ";

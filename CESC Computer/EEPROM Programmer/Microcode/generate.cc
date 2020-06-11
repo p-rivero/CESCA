@@ -220,10 +220,10 @@ void write_file(int filenum) {
     cout << "Writing arduino file " << filenum << endl;
     outputFile.open ("eeprom_contents" + to_string(filenum) + ".h");
     
-    outputFile << dec << "const PROGMEM uint8_t CONTENTS_SIZE = " << size << ";" << endl;
-    outputFile << "const PROGMEM uint8_t EEPROM_CONTENTS[] = {";
+    outputFile << dec << "const PROGMEM int CONTENTS_SIZE = " << size << ";" << endl;
+    outputFile << "const PROGMEM byte EEPROM_CONTENTS[] = {";
     for (int i = 0; i < size/32; i++) {
-        outputFile << endl << "\t";
+        outputFile << endl << "    ";
         for (int j = 0; j < 32; j++) {
             outputFile << dec << ((content[32*i + j] >> 8*filenum)&0xFF);
             if (j < 31 or i < size/32 - 1) outputFile << ", ";
