@@ -6,8 +6,7 @@
 #define WRITE_EN 13
 
 #define WRITE_DELAY 10  // Delay in milliseconds
-#define PROGRESS_SZ 128 // Adjust width of the progress bar (how many bytes are written for each dot)
-#define PRINT_SIZE 256  // Number of bytes to print (multiple of 16)
+#define PROGRESS_SZ 64 // Adjust width of the progress bar (how many bytes are written for each dot)
 
 #include "eeprom_contents.h"
 // eeprom_contents.h has an array named EEPROM_CONTENTS and an integer CONTENTS_SIZE.
@@ -58,16 +57,24 @@ void writeEEPROM(int address, byte data) {
 }
 
 
-// High level fuctions (slightly modified):
+// Utilities:
 
 // Read a byte from EEPROM_CONTENTS, stored in PROGMEM
 byte getContents(int index) {
     return pgm_read_byte_near(EEPROM_CONTENTS + index);
 }
 
+// Return a number in the format "DDD (0xHH)"
+String decAndHex(int num) {
+    return (String(num) + " (0x" + String(num, HEX) + ")");
+}
+
+
+// High level fuctions (slightly modified from Ben Eater's version):
+
 // Program the EEPROM. The contents from eeprom_contents.h are stored in PROGMEM
-void writeContents() {
-    Serial.println("Programming EEPROM. Size: " + String(CONTENTS_SIZE) + " (0x" + String(CONTENTS_SIZE, HEX) + ")");
+void programEeprom() {
+    Serial.println("\nProgramming EEPROM. Size: " + decAndHex(CONTENTS_SIZE));
     
     for (int i = 0; i < CONTENTS_SIZE/PROGRESS_SZ; i++) // Draw progress bar
         Serial.print(".");
@@ -83,16 +90,16 @@ void writeContents() {
 }
 
 // Print the contents of the first addresses on the EEPROM to the serial monitor
-void printContents() {
-    Serial.println("\nPrinting first " + String(PRINT_SIZE) + " bytes:");
+void printContents(int sz) {
+    Serial.println("\nDisplaying first " + String(sz) + " bytes:");
     
-    for (int addr = 0; addr < PRINT_SIZE; addr += 16) {
+    for (int addr = 0; addr < sz; addr += 16) {
         byte data[16];
         for (int i = 0; i < 16; i++)
             data[i] = readEEPROM(addr + i);
         
         char buf[80];
-        sprintf(buf, "%03x:  %02x %02x %02x %02x %02x %02x %02x %02x   %02x %02x %02x %02x %02x %02x %02x %02x",
+        sprintf(buf, "0x%03x:  %02x %02x %02x %02x %02x %02x %02x %02x   %02x %02x %02x %02x %02x %02x %02x %02x",
                 addr, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7],
                 data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[15]);
         
@@ -109,8 +116,8 @@ void runTest() {
     
     for (int addr = 0; addr < CONTENTS_SIZE; addr++) {
         if (readEEPROM(addr) != getContents(addr)) {
-            Serial.print("\nERROR DETECTED AT ADDRESS 0x" + String(addr, HEX) + ". Read data was 0x");
-            Serial.println(String(readEEPROM(addr), HEX) + " instead of 0x" + String(getContents(addr), HEX));
+            Serial.print("\nERROR DETECTED AT ADDRESS " + decAndHex(addr) + ". Read data was ");
+            Serial.println(decAndHex(readEEPROM(addr)) + " instead of " + decAndHex(getContents(addr)));
             return;
         }
     
@@ -120,6 +127,16 @@ void runTest() {
     Serial.println("\nNO ERRORS WERE DETECTED!");
 }
 
+void showHelp() {
+    Serial.println("\nAvailable commands:");
+    Serial.println("p       Program the EEPROM (recommended)");
+    Serial.println("t       Test EEPROM to check if it matches the expected contents from eeprom_contents.h");
+    Serial.println("d N     Display the first N addresses of the EEPROM. Ex: d 256");
+    Serial.println("r A     Read the contents at address A (decimal!).   Ex: r 1024");
+    Serial.println("w A D   Write data D to address A (both decimal!).   Ex: w 1024 0");
+    Serial.println("h       Help: display the available commands again.");
+    Serial.println("\nWARNING: all arguments must be entered in DECIMAL!");
+}
 
 
 void setup() {
@@ -130,17 +147,53 @@ void setup() {
     digitalWrite(WRITE_EN, HIGH);
     pinMode(WRITE_EN, OUTPUT);
     Serial.begin(57600);
-    
-    // Program the EEPROM
-    writeContents();
-    
-    // Print first bytes of the EEPROM
-    printContents();
-    
-    // Check if the written data is correct
-    runTest();
+
+    Serial.println("EEPROM PROGRAMMER\neeprom_contents.h loaded. Size: " + decAndHex(CONTENTS_SIZE));
+    showHelp();
 }
 
 void loop() {
-    // No code needed
+    // If an input is ready and no operations are being performed, read the input
+    if (Serial.available() > 0) {
+        byte inp = Serial.read();
+        if (inp == 'p' or inp == 'P') {  // Program EEPROM
+            programEeprom(); // Program the EEPROM
+            runTest(); // Check if the written data is correct
+            
+        } else if (inp == 't' or inp == 'T') {  // Run test
+            runTest();
+            
+        } else if (inp == 'd' or inp == 'D') {  // Display contents
+            int num = Serial.parseInt();
+            if (num < 0) Serial.println("\nError: the number of addresses to display must be positive!");
+            else {
+                int rounded = num - num%16;
+                if (num%16 != 0) rounded += 16;
+                printContents(rounded);
+            }
+            
+        } else if (inp == 'r' or inp == 'R') {  // Read from address
+            int addr = Serial.parseInt();
+            if (addr < 0) Serial.println("\nError: the address must be positive!");
+            else {
+                byte r = readEEPROM(addr);
+                Serial.println("\nAddress " + decAndHex(addr) + " contains: " + decAndHex(r));
+            }
+            
+        } else if (inp == 'w' or inp == 'W') {  // Write to address
+            int addr = Serial.parseInt();
+            byte d = Serial.parseInt();
+            if (addr < 0) Serial.println("\nError: the address must be positive!");
+            else {
+                writeEEPROM(addr, d);
+                Serial.println("\nData " + decAndHex(d) + " has been written to address " + decAndHex(addr));
+            }
+            
+        } else if (inp == 'h' or inp == 'H') {  // Show help message
+            showHelp();
+            
+        } else if (inp != 10) {     // Ignore newline character
+            Serial.println("\nInvalid command. Use \"h\" for help");
+        }
+    }
 }

@@ -18,5 +18,10 @@ The pin connections on my Arduino programmer are the same as Ben's. The only dif
 
 **Improvements over Ben's original programmer:**
 
-- Added progress bars that indicate the progress of the current operation.
+- Added progress bars that indicate the state of the current operation.
 - Added a content check once the programming has finished: reads all the addresses and compares its content with the value it was supposed to have. If it detects a conflict, an error message is printed to the serial monitor and the check is aborted.
+- Added a serial interface that allows the user to select which operation to perform from a command line menu.
+
+**Demo of the serial interface:**
+
+![Demo](https://github.com/p-rivero/CESCA/blob/master/CESC%20Computer/EEPROM%20Programmer/demo.gif?raw=true)
