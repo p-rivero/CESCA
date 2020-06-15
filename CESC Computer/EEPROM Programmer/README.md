@@ -14,7 +14,9 @@ If you don't need to make changes to the code, the resulting `output.hex` and `e
 
 ## Programming the EEPROM
 
-The pin connections on my Arduino programmer are the same as Ben's. The only difference is the extra address outputs from the shift registers to the AT28C64B I used. Simply move the corresponding `eeprom_contents.h` next to `programmer.ino` (or change the #include directive) and upload the program to your Arduino programmer. Open the serial monitor to see the progress.
+The pin connections on my Arduino programmer are the same as Ben's. The only difference is the extra address outputs from the shift registers to the AT28C64B I used.
+
+To program an EEPROM, simply move the corresponding `eeprom_contents.h` next to `programmer.ino` (or change the `#include` directive) and upload the program to your Arduino programmer. Open the serial monitor to start sending commands (type `p` and *Enter* to start programming).
 
 **Improvements over Ben's original programmer:**
 
