@@ -3,8 +3,8 @@
 This repository contains the following:
 
 ## CESCA architecture:
-- Documentation for the ISA
-- General information about the architecture
+- [**MAIN DOCUMENTATION**](https://github.com/p-rivero/CESCA/blob/master/Documentation/CESCA%20Documentation.pdf)
+- Information about the architecture and its I/O interfaces
 - Examples of some assembly programs
 
 ## CESC computer:
