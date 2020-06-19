@@ -192,7 +192,7 @@ void loop() {
         } else if (inp == 'h' or inp == 'H') {  // Show help message
             showHelp();
             
-        } else if (inp != 10) {     // Ignore newline character
+        } else if (inp != 0x0A and inp != 0x20) {   // Ignore newline and space characters
             Serial.println("\nInvalid command. Use \"h\" for help");
         }
     }
