@@ -2,10 +2,10 @@
 ;     MATH LIBRARY
 ; ====================
 ; This file contains a collection of useful math subroutines. Other files can include this library
-; in order to call its functions, by simply adding the following line after #include "CESCA.cpu".
+; in order to call its functions, by simply adding the following line (at the end of the file!)
 ; #include "MATH.asm"
 ; However, the entire assembled library takes about 55 instructions so on large programs you will 
-; need to copy/paste just the subroutines you are going to use, to save space.
+; need to copy/paste just the subroutines you are going to use in order to save space.
 
 
 
@@ -53,10 +53,10 @@ mult16:
 .m_loop:
     CMP-ANDI R0, 0x01       ; Test last bit
     JZ .endif
-    SWAP R0, R0             ; Load lower bits of result temporarily
+    SWAP R0                 ; Load lower bits of result temporarily
     ADD R0, R0, R2
     ADDC R1, R1, R3         ; Add A to the result (16 bit add)
-    SWAP R0, R0             ; Restore B in R0
+    SWAP R0                 ; Restore B in R0
     
 .endif:
     SLL R2, R2          ; Shift lower A to the left
@@ -95,9 +95,9 @@ div8_noHeader:
     INC R1          ; Set bottom bit of quotient (we know it's zero)
     
 .endif:
-    SWAP R0, R0
+    SWAP R0
     DEC R0          ; Decrement counter in stack
-    SWAP R0, R0
+    SWAP R0
     JNZ .d_loop
     
     POP R0          ; Destroy counter in stack

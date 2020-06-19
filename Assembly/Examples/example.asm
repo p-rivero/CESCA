@@ -5,7 +5,6 @@
 ; anything useful and some parts are even unreachable. It's meant to give an intuition of how would a real program look like.
 
 #include "CESCA.cpu" ; Include cpudef
-#include "MATH.asm"  ; Include math library
 
 ; constant that can be used as a number
 constant = 0x10 - (2 * 4 + 0x07)
@@ -64,3 +63,9 @@ subroutine:
     
     POP R2                  ; Restores protected registers
     RET                     ; Returns to the point where the subroutine was called
+
+
+
+; Libraries are included at the end of the file:
+
+#include "MATH.asm"  ; Include MATH library
