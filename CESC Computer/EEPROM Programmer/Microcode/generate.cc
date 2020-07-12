@@ -170,8 +170,9 @@ void generate() {
     assert(TEMPLATE.size() == TEMPL_SIZE); // Check size
     
     // COPY TEMPLATE 16 TIMES:
-    for (int i = 0; i < size; i++)
-        content[i] = TEMPLATE[i % TEMPL_SIZE];
+    for (int i = 0; i < size; i+=TEMPL_SIZE)
+        for (int j = 0; j < TEMPL_SIZE; j++)
+            content[i+j] = TEMPLATE[j];
     
     
     // FLAG MODIFICATIONS: Enable jump instructions
@@ -182,20 +183,20 @@ void generate() {
         bool SF = flags & 0b1000; // Sign flag
         
         if (ZF) enable_jmp(flags, 0b101100); // JZ
-        else enable_jmp(flags, 0b101101); // JNZ
+        else    enable_jmp(flags, 0b101101); // JNZ
         
         if (CF) enable_jmp(flags, 0b101110); // JC
-        else enable_jmp(flags, 0b101111); // JNC
+        else    enable_jmp(flags, 0b101111); // JNC
         
         if (VF) enable_jmp(flags, 0b110000); // JV
-        else enable_jmp(flags, 0b110001); // JNV
+        else    enable_jmp(flags, 0b110001); // JNV
         
         if (SF) enable_jmp(flags, 0b110010); // JN
-        else enable_jmp(flags, 0b110011); // JP
+        else    enable_jmp(flags, 0b110011); // JP
         
         if (not SF and not ZF) enable_jmp(flags, 0b110100); // JSP
         
-        if (ZF or CF) enable_jmp(flags, 0b110101); // JLEU
+        if (ZF or CF)  enable_jmp(flags, 0b110101); // JLEU
         
         if (VF xor SF) enable_jmp(flags, 0b110110); // JLT
         
@@ -208,11 +209,13 @@ void write_file(int filenum) {
     ofstream outputFile;
     
     cout << "Writing HEX file " << filenum << endl;
-    outputFile.open ("output" + to_string(filenum) + ".hex");
+    outputFile.open("output" + to_string(filenum) + ".hex");
     
     for (int i = 0; i < size/32; i++) {
-        for (int j = 0; j < 32; j++)
-            outputFile << setw(2) << setfill('0') << hex << ((content[32*i + j] >> 8*filenum)&0xFF) << ' ';
+        for (int j = 0; j < 32; j++) {
+            unsigned char output = content[32*i + j] >> (8*filenum);
+            outputFile << setw(2) << setfill('0') << hex << int(output) << ' ';
+        }
         outputFile << endl;
     }
     outputFile.close();
@@ -226,7 +229,8 @@ void write_file(int filenum) {
     for (int i = 0; i < size/32; i++) {
         outputFile << endl << "    ";
         for (int j = 0; j < 32; j++) {
-            outputFile << dec << ((content[32*i + j] >> 8*filenum)&0xFF);
+            unsigned char output = content[32*i + j] >> (8*filenum);
+            outputFile << dec << int(output);
             if (j < 31 or i < size/32 - 1) outputFile << ", ";
         }
     }
