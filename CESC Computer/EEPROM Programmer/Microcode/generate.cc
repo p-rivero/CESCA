@@ -7,6 +7,7 @@
 using namespace std;
 
 
+// CONTROL SIGNALS
 #define HLT     0x000001    // Halt clock
 #define CLR     0x000002    // Clear microcode (start next instruction)
 #define OutEn   0x000004    // Enable output
@@ -32,136 +33,136 @@ using namespace std;
 #define Inp     0x400000    // Get input (input register out)
 #define Ack     0x800000    // Input acknowledge
 
-#define fetch_0 OutEn|OUT_1|AdrIn               // Move the PC to the MAR
-#define fetch_1 PCpp|OutEn|OUT_0|IrIn|LdTmp     // Fetch opcode to IR
-#define fetch_2 OutEn|OUT_0|MPg_0               // Fetch arguments
 
-#define CtrlA IOp_2                 // Immediate move A
-#define CtrlB IOp_2|IOp_0           // Immediate move B
-#define CtrlAndi IOp_2|IOp_1|IOp_0  // Immediate Andi
+// COMMONLY USED SIGNAL COMBINATIONS
+#define fetch_op    OutEn|OUT_1|AdrIn, PCpp|OutEn|OUT_0|IrIn|LdTmp  // Move the PC to the MAR, then fetch opcode to IR
+#define fetch_arg   OutEn|OUT_0|MPg_0                               // Fetch arguments
 
-#define StackMem MPg_1|MPg_0        // Stack memory page
-#define StackOut OUT_1|OUT_0        // Output the Stack Pointer
+#define CtrlA       IOp_2               // Immediate move A
+#define CtrlB       IOp_2|IOp_0         // Immediate move B
+#define CtrlAndi    IOp_2|IOp_1|IOp_0   // Immediate Andi
+
+#define StackMem    MPg_1|MPg_0         // Stack memory page
+#define StackOut    OUT_1|OUT_0         // Output the Stack Pointer
 
 
-// 4 bits flags + 4 bits opcode + 2 bits opcode extra + 3 bits timesteps
-const int size = 16*16*4*8;
+
+// INSTRUCTIONS:
+#define ALU_OP      fetch_op,   fetch_arg|LdTmp,  OutEn|LdReg|LdFlg,                    CLR,    0, 0, 0
+
+#define ADDI        fetch_op,   fetch_arg|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg,      CLR,    0, 0, 0
+
+#define CMP_OP      fetch_op,   fetch_arg|LdTmp|LdFlg,                                  CLR,    0, 0, 0, 0
+
+#define CMP_SUBI    fetch_op,   fetch_arg|LdTmp|IOp_2|IOp_1|LdFlg,                      CLR,    0, 0, 0, 0
+
+#define CMP_ANDI    fetch_op,   fetch_arg|LdTmp|CtrlAndi|LdFlg,                         CLR,    0, 0, 0, 0
+
+#define CMP_IN      fetch_op,   Inp|LdTmp|IOp_2,    0,  fetch_arg|LdTmp|CtrlAndi|LdFlg, CLR,    0, 0
+
+#define MOVI        fetch_op,   fetch_arg|LdReg,                                        CLR,    0, 0, 0, 0
+
+#define IN          fetch_op,   Inp|LdReg,  0,                                          CLR,    0, 0, 0
+
+#define IN_Ack      fetch_op,   Ack,                                                    CLR,    0, 0, 0, 0
+
+#define ST_A        fetch_op,   fetch_arg|AdrIn,  OutEn|CtrlB|MPg_1|MemIn,              CLR,    0, 0, 0
+
+#define ST_R        fetch_op,   fetch_arg|LdTmp,  OutEn|CtrlB|AdrIn,  OutEn|CtrlA|MPg_1|MemIn,      CLR,    0, 0
+
+#define PUSH        fetch_op,   SPpp|IOp_2,     OutEn|StackOut|AdrIn,   OutEn|CtrlB|StackMem|MemIn, CLR,    0, 0
+
+#define LD_A        fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,              CLR,    0, 0, 0
+
+#define LD_R        fetch_op,   OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0
+
+#define POP         fetch_op,   OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0
+
+#define SWAP        fetch_op,   OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn, CLR, 0, 0
+
+#define JMP         fetch_op,   fetch_arg|PcIn,                                         CLR,    0, 0, 0, 0
+
+#define JR          fetch_op,   OutEn|CtrlB|PcIn,                                       CLR,    0, 0, 0, 0
+
+#define CALL        fetch_op,   fetch_arg|LdTmp|IOp_2|SPpp,   OutEn|StackOut|AdrIn,   OutEn|OUT_1|StackMem|MemIn, OutEn|CtrlB|PcIn, CLR, 0
+
+#define RET         fetch_op,   OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|PcIn|SPpp, CLR,    0, 0, 0
+
+#define COND_JMP    fetch_op,   CLR,   CLR,    0, 0, 0, 0
+                                // The first CLR will get changed to fetch_arg|PcIn if the flags are in the correct state.
+
+#define LCD_C       fetch_op,   fetch_arg|LcdIn,                                        CLR,    0, 0, 0, 0
+
+#define LCD_I       fetch_op,   fetch_arg|LcdIn|LcdDt,                                  CLR,    0, 0, 0, 0
+
+#define LCD_R       fetch_op,   OutEn|CtrlB|LcdIn|LcdDt,                                CLR,    0, 0, 0, 0
+
+#define LCD_A       fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|LcdIn|LcdDt,        CLR,    0, 0, 0
+
+#define OUT_R       fetch_op,   OutEn|CtrlB|DecIn,                                      CLR,    0, 0, 0, 0
+
+#define OUT_A       fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|DecIn,              CLR,    0, 0, 0
+
+#define HALT        fetch_op,   HLT,                                                    0, 0, 0, 0, 0
+
+#define NOP         fetch_op,                                                           0, 0, 0, 0, 0, CLR
+
+
+
+// 4 bit flags + 4 bit opcode + 2 bit extra opcode + 3 bit timestep
+const unsigned int size = 16*16*4*8;
 vector<unsigned int> content(size);
 
 // Size of template: 16 (opcode) * 4 (opcode extra) * 8 (timesteps)
-const int TEMPL_SIZE = 16*4*8;
+const unsigned int TEMPL_SIZE = 16*4*8;
 const vector<unsigned int> TEMPLATE = {
-    fetch_0,    fetch_1,    fetch_2|LdTmp,  OutEn|LdReg|LdFlg,                      CLR,    0, 0, 0,        // 000000 - ALU OPERATIONS
-    fetch_0,    fetch_1,    fetch_2|LdTmp,  OutEn|LdReg|LdFlg,                      CLR,    0, 0, 0,        // 000001 - ALU OPERATIONS
-    fetch_0,    fetch_1,    fetch_2|LdTmp,  OutEn|LdReg|LdFlg,                      CLR,    0, 0, 0,        // 000010 - ALU OPERATIONS
-    fetch_0,    fetch_1,    fetch_2|LdTmp,  OutEn|LdReg|LdFlg,                      CLR,    0, 0, 0,        // 000011 - ALU OPERATIONS
-    
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg,        CLR,    0, 0, 0,        // 000100 - ADDI
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg,        CLR,    0, 0, 0,        // 000101 - ADDI
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg,        CLR,    0, 0, 0,        // 000110 - ADDI
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg,        CLR,    0, 0, 0,        // 000111 - ADDI
-    
-    fetch_0,    fetch_1,    fetch_2|LdTmp|LdFlg,                                    CLR,    0, 0, 0, 0,     // 001000 - CMP-OP
-    
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2|IOp_1|LdFlg,                        CLR,    0, 0, 0, 0,     // 001001 - CMP-SUBI
-    
-    fetch_0,    fetch_1,    fetch_2|LdTmp|CtrlAndi|LdFlg,                           CLR,    0, 0, 0, 0,     // 001010 - CMP-ANDI
-    
-    fetch_0,    fetch_1,    Inp|LdTmp|IOp_2,    0,  fetch_2|LdTmp|CtrlAndi|LdFlg,   CLR,    0, 0,           // 001011 - CMP-IN
-    
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001100 - MOVI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001101 - MOVI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001110 - MOVI
-    fetch_0,    fetch_1,    fetch_2|LdReg,                                          CLR,    0, 0, 0, 0,     // 001111 - MOVI
-    
-    fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010000 - IN
-    fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010001 - IN
-    fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010010 - IN
-    fetch_0,    fetch_1,    Inp|LdReg,  0,                                          CLR,    0, 0, 0,        // 010011 - IN
-    
-    fetch_0,    fetch_1,    Ack,                                                    CLR,    0, 0, 0, 0,     // 010100 - IN-Ack
-    
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|CtrlB|MPg_1|MemIn,                CLR,    0, 0, 0,        // 010101 - ST-Addr
-    
-    fetch_0,    fetch_1,    fetch_2|LdTmp,  OutEn|CtrlB|AdrIn,  OutEn|CtrlA|MPg_1|MemIn,    CLR,    0, 0,   // 010110 - ST-Reg
-    
-    fetch_0,    fetch_1,    SPpp|IOp_2,     OutEn|StackOut|AdrIn,   OutEn|CtrlB|StackMem|MemIn,     CLR,    0, 0,   // 010111 - PUSH
-    
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,                CLR,    0, 0, 0,        // 011000 - LD-Addr
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,                CLR,    0, 0, 0,        // 011001 - LD-Addr
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,                CLR,    0, 0, 0,        // 011010 - LD-Addr
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,                CLR,    0, 0, 0,        // 011011 - LD-Addr
-    
-    fetch_0,    fetch_1,    OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0,        // 011100 - LD-Reg
-    fetch_0,    fetch_1,    OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0,        // 011101 - LD-Reg
-    fetch_0,    fetch_1,    OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0,        // 011110 - LD-Reg
-    fetch_0,    fetch_1,    OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0,        // 011111 - LD-Reg
-
-    
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0,        // 100000 - POP
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0,        // 100001 - POP
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0,        // 100010 - POP
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0,        // 100011 - POP
-    
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn,     CLR,    0,  0,          // 100100 - SWAP
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn,     CLR,    0,  0,          // 100101 - SWAP
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn,     CLR,    0,  0,          // 100110 - SWAP
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn,     CLR,    0,  0,          // 100111 - SWAP
-    
-    fetch_0,    fetch_1,    fetch_2|PcIn,                                           CLR,    0, 0, 0, 0,     // 101000 - J
-    
-    fetch_0,    fetch_1,    OutEn|CtrlB|PcIn,                                       CLR,    0, 0, 0, 0,     // 101001 - JR
-    
-    fetch_0,    fetch_1,    fetch_2|LdTmp|IOp_2|SPpp,   OutEn|StackOut|AdrIn,   OutEn|OUT_1|StackMem|MemIn, OutEn|CtrlB|PcIn,   CLR,    0,  // 101010 - CALL
-    
-    fetch_0,    fetch_1,    OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|PcIn|SPpp, CLR,    0, 0, 0,        // 101011 - RET
-    
-    fetch_0,    fetch_1,    CLR,  /*   Will get changed by fetch_2|PcIn if     */   CLR,    0, 0, 0, 0,     // 101100 - JZ
-    
-    fetch_0,    fetch_1,    CLR,  /*   the flags are in the correct state.     */   CLR,    0, 0, 0, 0,     // 101101 - JNZ
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 101110 - JC
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 101111 - JNC
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 110000 - JV
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 110001 - JNV
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 110010 - JN
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 110011 - JP
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 110100 - JSP
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 110101 - JLEU
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 110110 - JLT
-    
-    fetch_0,    fetch_1,    CLR,                                                    CLR,    0, 0, 0, 0,     // 110111 - JLE
-    
-    fetch_0,    fetch_1,    fetch_2|LcdIn,                                          CLR,    0, 0, 0, 0,     // 111000 - LCD-Com
-    
-    fetch_0,    fetch_1,    fetch_2|LcdIn|LcdDt,                                    CLR,    0, 0, 0, 0,     // 111001 - LCD-Imm
-    
-    fetch_0,    fetch_1,    OutEn|CtrlB|LcdIn|LcdDt,                                CLR,    0, 0, 0, 0,     // 111010 - LCD-Reg
-    
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|LcdIn|LcdDt,          CLR,    0, 0, 0,        // 111011 - LCD-Mem
-    
-    fetch_0,    fetch_1,    OutEn|CtrlB|DecIn,                                      CLR,    0, 0, 0, 0,     // 111100 - OUT-Reg
-    
-    fetch_0,    fetch_1,    fetch_2|AdrIn,  OutEn|OUT_0|MPg_1|DecIn,                CLR,    0, 0, 0,        // 111101 - OUT-Mem
-    
-    fetch_0,    fetch_1,    HLT,                                                    0, 0, 0, 0, 0,          // 111110 - HLT
-    
-    fetch_0,    fetch_1,                                                            0, 0, 0, 0, 0, CLR      // 111111 - NOP
+    ALU_OP, ALU_OP, ALU_OP, ALU_OP, // 0000XX - ALU OPERATIONS
+    ADDI, ADDI, ADDI, ADDI,         // 0001XX - ADDI
+    CMP_OP,                         // 001000 - CMP-OP
+    CMP_SUBI,                       // 001001 - CMP-SUBI
+    CMP_ANDI,                       // 001010 - CMP-ANDI
+    CMP_IN,                         // 001011 - CMP-IN
+    MOVI, MOVI, MOVI, MOVI,         // 0011XX - MOVI
+    IN, IN, IN, IN,                 // 0100XX - IN
+    IN_Ack,                         // 010100 - IN-Ack
+    ST_A,                           // 010101 - ST-Addr
+    ST_R,                           // 010110 - ST-Reg
+    PUSH,                           // 010111 - PUSH
+    LD_A, LD_A, LD_A, LD_A,         // 0110XX - LD-Addr
+    LD_R, LD_R, LD_R, LD_R,         // 0111XX - LD-Reg
+    POP, POP, POP, POP,             // 1000XX - POP
+    SWAP, SWAP, SWAP, SWAP,         // 1001XX - SWAP
+    JMP,                            // 101000 - J
+    JR,                             // 101001 - JR
+    CALL,                           // 101010 - CALL
+    RET,                            // 101011 - RET
+    COND_JMP,                       // 101100 - JZ
+    COND_JMP,                       // 101101 - JNZ
+    COND_JMP,                       // 101110 - JC
+    COND_JMP,                       // 101111 - JNC
+    COND_JMP,                       // 110000 - JV
+    COND_JMP,                       // 110001 - JNV
+    COND_JMP,                       // 110010 - JN
+    COND_JMP,                       // 110011 - JP
+    COND_JMP,                       // 110100 - JSP
+    COND_JMP,                       // 110101 - JLEU
+    COND_JMP,                       // 110110 - JLT
+    COND_JMP,                       // 110111 - JLE
+    LCD_C,                          // 111000 - LCD-Com
+    LCD_I,                          // 111001 - LCD-Imm
+    LCD_R,                          // 111010 - LCD-Reg
+    LCD_A,                          // 111011 - LCD-Addr
+    OUT_R,                          // 111100 - OUT-Reg
+    OUT_A,                          // 111101 - OUT-Addr
+    HALT,                           // 111110 - HLT
+    NOP                             // 111111 - NOP
 };
 
 
-int enable_jmp(int flags, int opcode) {
-    // Replace the first microinstruction (excluding fetch 0 and 1) from a given opcode with: fetch_2|PcIn
+void enable_jmp(int flags, int opcode) {
+    // Replace the first microinstruction (excluding the 2 fetch cycles) from a given opcode with: fetch_arg|PcIn
     int address = TEMPL_SIZE*flags + 8*opcode + 2;
-    content[address] = fetch_2|PcIn;
+    content[address] = fetch_arg|PcIn;
 }
 
 void generate() {
