@@ -11,5 +11,5 @@ This repository contains the following:
 - Pictures of the finished build **(not yet)**
 - Schematics and PCBs **(not yet)**
 - Code for programming all its EEPROMs
-- Code for assembing and sending programs to the Arduino RAM programmer **(not yet)**
+- Code for assembing and sending programs to the Arduino RAM programmer
 > *Important notice:* The used assembler is **customasm**, which you can find [here](https://github.com/hlorenzi/customasm).
