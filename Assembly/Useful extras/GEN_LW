@@ -1,2 +1,0 @@
-If this file (or any file with the same name) is in the same folder as send_file.exe, the program will be converted to a RAM hex file that can be used in LogicWorks, instead of being sent to an Arduino programmer.
-The contents of .GEN_LW (this file) don't matter. The only thing checked is the name.
