@@ -9,7 +9,7 @@ using namespace std;
 
 // CONTROL SIGNALS
 #define HLT     0x000001    // Halt clock
-#define CLR     0x000002    // Clear microcode (start next instruction)
+#define CLR     0x000002    // Clear microcode counter (start next instruction)
 #define OutEn   0x000004    // Enable output
 #define OUT_1   0x000008    // Output select (output to the bus)
 #define OUT_0   0x000010    //     00 = ALU, 01 = Mem, 10 = PC, 11 = SP
@@ -48,64 +48,64 @@ using namespace std;
 
 
 // INSTRUCTIONS:
-#define ALU_OP      fetch_op,   fetch_arg|LdTmp,  OutEn|LdReg|LdFlg,                    CLR,    0, 0, 0
+#define ALU_OP      fetch_op,   fetch_arg|LdTmp,  OutEn|LdReg|LdFlg|CLR,                    0, 0, 0, 0
 
-#define ADDI        fetch_op,   fetch_arg|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg,      CLR,    0, 0, 0
+#define ADDI        fetch_op,   fetch_arg|LdTmp|IOp_2,    OutEn|LdReg|IOp_0|LdFlg|CLR,      0, 0, 0, 0
 
-#define CMP_OP      fetch_op,   fetch_arg|LdTmp|LdFlg,                                  CLR,    0, 0, 0, 0
+#define CMP_OP      fetch_op,   fetch_arg|LdTmp|LdFlg|CLR,                                  0, 0, 0, 0, 0
 
-#define CMP_SUBI    fetch_op,   fetch_arg|LdTmp|IOp_2|IOp_1|LdFlg,                      CLR,    0, 0, 0, 0
+#define CMP_SUBI    fetch_op,   fetch_arg|LdTmp|IOp_2|IOp_1|LdFlg|CLR,                      0, 0, 0, 0, 0
 
-#define CMP_ANDI    fetch_op,   fetch_arg|LdTmp|CtrlAndi|LdFlg,                         CLR,    0, 0, 0, 0
+#define CMP_ANDI    fetch_op,   fetch_arg|LdTmp|CtrlAndi|LdFlg|CLR,                         0, 0, 0, 0, 0
 
-#define CMP_IN      fetch_op,   Inp|LdTmp|IOp_2,    0,  fetch_arg|LdTmp|CtrlAndi|LdFlg, CLR,    0, 0
+#define CMP_IN      fetch_op,   Inp|LdTmp|IOp_2,    0,  fetch_arg|LdTmp|CtrlAndi|LdFlg|CLR, 0, 0, 0
 
-#define MOVI        fetch_op,   fetch_arg|LdReg,                                        CLR,    0, 0, 0, 0
+#define MOVI        fetch_op,   fetch_arg|LdReg|CLR,                                        0, 0, 0, 0, 0
 
-#define IN          fetch_op,   Inp|LdReg,  0,                                          CLR,    0, 0, 0
+#define IN          fetch_op,   Inp|LdReg,  CLR,                                            0, 0, 0, 0
 
-#define IN_Ack      fetch_op,   Ack,                                                    CLR,    0, 0, 0, 0
+#define IN_Ack      fetch_op,   Ack|CLR,                                                    0, 0, 0, 0, 0
 
-#define ST_A        fetch_op,   fetch_arg|AdrIn,  OutEn|CtrlB|MPg_1|MemIn,              CLR,    0, 0, 0
+#define ST_A        fetch_op,   fetch_arg|AdrIn,  OutEn|CtrlB|MPg_1|MemIn|CLR,              0, 0, 0, 0
 
-#define ST_R        fetch_op,   fetch_arg|LdTmp,  OutEn|CtrlB|AdrIn,  OutEn|CtrlA|MPg_1|MemIn,      CLR,    0, 0
+#define ST_R        fetch_op,   fetch_arg|LdTmp,  OutEn|CtrlB|AdrIn,  OutEn|CtrlA|MPg_1|MemIn|CLR,      0, 0, 0
 
-#define PUSH        fetch_op,   SPpp|IOp_2,     OutEn|StackOut|AdrIn,   OutEn|CtrlB|StackMem|MemIn, CLR,    0, 0
+#define PUSH        fetch_op,   SPpp|IOp_2,     OutEn|StackOut|AdrIn,   OutEn|CtrlB|StackMem|MemIn|CLR, 0, 0, 0
 
-#define LD_A        fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,              CLR,    0, 0, 0
+#define LD_A        fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|LdReg|CLR,              0, 0, 0, 0
 
-#define LD_R        fetch_op,   OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg,            CLR,    0, 0, 0
+#define LD_R        fetch_op,   OutEn|CtrlB|AdrIn,  OutEn|OUT_0|MPg_1|LdReg|CLR,            0, 0, 0, 0
 
-#define POP         fetch_op,   OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp, CLR,    0, 0, 0
+#define POP         fetch_op,   OutEn|StackOut|AdrIn,  OutEn|OUT_0|StackMem|LdReg|SPpp|CLR, 0, 0, 0, 0
 
-#define SWAP        fetch_op,   OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn, CLR, 0, 0
+#define SWAP        fetch_op,   OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|LdReg,     OutEn|CtrlB|StackMem|MemIn|CLR, 0, 0, 0
 
-#define JMP         fetch_op,   fetch_arg|PcIn,                                         CLR,    0, 0, 0, 0
+#define JMP         fetch_op,   fetch_arg|PcIn|CLR,                                         0, 0, 0, 0, 0
 
-#define JR          fetch_op,   OutEn|CtrlB|PcIn,                                       CLR,    0, 0, 0, 0
+#define JR          fetch_op,   OutEn|CtrlB|PcIn|CLR,                                       0, 0, 0, 0, 0
 
-#define CALL        fetch_op,   fetch_arg|LdTmp|IOp_2|SPpp,   OutEn|StackOut|AdrIn,   OutEn|OUT_1|StackMem|MemIn, OutEn|CtrlB|PcIn, CLR, 0
+#define CALL        fetch_op,   fetch_arg|LdTmp|IOp_2|SPpp,   OutEn|StackOut|AdrIn,   OutEn|OUT_1|StackMem|MemIn, OutEn|CtrlB|PcIn|CLR, 0, 0
 
-#define RET         fetch_op,   OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|PcIn|SPpp, CLR,    0, 0, 0
+#define RET         fetch_op,   OutEn|StackOut|AdrIn,   OutEn|OUT_0|StackMem|PcIn|SPpp|CLR, 0, 0, 0, 0
 
-#define COND_JMP    fetch_op,   CLR,   CLR,    0, 0, 0, 0
-                                // The first CLR will get changed to fetch_arg|PcIn if the flags are in the correct state.
+#define COND_JMP    fetch_op,   CLR,   0, 0, 0, 0, 0
+                                // The CLR will get changed to fetch_arg|PcIn|CLR if the flags are in the correct state.
 
-#define LCD_C       fetch_op,   fetch_arg|LcdIn,                                        CLR,    0, 0, 0, 0
+#define LCD_C       fetch_op,   fetch_arg|LcdIn|CLR,                                        0, 0, 0, 0, 0
 
-#define LCD_I       fetch_op,   fetch_arg|LcdIn|LcdDt,                                  CLR,    0, 0, 0, 0
+#define LCD_I       fetch_op,   fetch_arg|LcdIn|LcdDt|CLR,                                  0, 0, 0, 0, 0
 
-#define LCD_R       fetch_op,   OutEn|CtrlB|LcdIn|LcdDt,                                CLR,    0, 0, 0, 0
+#define LCD_R       fetch_op,   OutEn|CtrlB|LcdIn|LcdDt|CLR,                                0, 0, 0, 0, 0
 
-#define LCD_A       fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|LcdIn|LcdDt,        CLR,    0, 0, 0
+#define LCD_A       fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|LcdIn|LcdDt|CLR,        0, 0, 0, 0
 
-#define OUT_R       fetch_op,   OutEn|CtrlB|DecIn,                                      CLR,    0, 0, 0, 0
+#define OUT_R       fetch_op,   OutEn|CtrlB|DecIn|CLR,                                      0, 0, 0, 0, 0
 
-#define OUT_A       fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|DecIn,              CLR,    0, 0, 0
+#define OUT_A       fetch_op,   fetch_arg|AdrIn,  OutEn|OUT_0|MPg_1|DecIn|CLR,              0, 0, 0, 0
 
-#define HALT        fetch_op,   HLT,                                                    0, 0, 0, 0, 0
+#define HALT        fetch_op,   HLT,                                                        0, 0, 0, 0, 0
 
-#define NOP         fetch_op,                                                           0, 0, 0, 0, 0, CLR
+#define NOP         fetch_op,                                                               0, 0, 0, 0, 0, 0
 
 
 
@@ -160,9 +160,9 @@ const vector<unsigned int> TEMPLATE = {
 
 
 void enable_jmp(int flags, int opcode) {
-    // Replace the first microinstruction (excluding the 2 fetch cycles) from a given opcode with: fetch_arg|PcIn
+    // Replace the first microinstruction (excluding the 2 fetch cycles) from a given opcode with: fetch_arg|PcIn|CLR
     int address = TEMPL_SIZE*flags + 8*opcode + 2;
-    content[address] = fetch_arg|PcIn;
+    content[address] = fetch_arg | PcIn | CLR;
 }
 
 void generate() {
