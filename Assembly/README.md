@@ -25,5 +25,3 @@ Example (running from windows cmd)
 ```
 
 The program will automatically launch Arduino IDE, from which you can upload the program to the Arduino RAM programmer.
-
-You can compile `RAM_Programmer.exe` yourself, by simply compiling `ram_programmer.cc` (which comes included in the `ram_programmer` folder).
