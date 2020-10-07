@@ -27,6 +27,11 @@
     XNOR => 0xB
 }
 
+#subruledef ADDR {
+    skip({Off: i8})   =>  pc+Off+1  ; Skips a number of instructions
+    {Imm: u8}   =>   Imm
+}
+
 #ruledef Instructions {
     ; ARITHMETIC AND LOGIC OPERATIONS
     
@@ -70,37 +75,37 @@
     
     ; JUMP INSTRUCTIONS
     
-    J {Addr: u8}            =>  0xA0 @ Addr
+    J {Addr: ADDR}          =>  0xA0 @ Addr
     
     JR {Ra: REG}            =>  0xA @ 0b01 @ Ra`2 @ 0x00
     
-    CALL {Addr: u8}         =>  0xA8 @ Addr
+    CALL {Addr: ADDR}       =>  0xA8 @ Addr
     
     RET                     =>  0xAC00
     
-    JZ {Addr: u8}           =>  0xB0 @ Addr
+    JZ {Addr: ADDR}         =>  0xB0 @ Addr`8
     
-    JNZ {Addr: u8}          =>  0xB4 @ Addr
+    JNZ {Addr: ADDR}        =>  0xB4 @ Addr`8
     
-    JC {Addr: u8}           =>  0xB8 @ Addr
+    JC {Addr: ADDR}         =>  0xB8 @ Addr`8
     
-    JNC {Addr: u8}          =>  0xBC @ Addr
+    JNC {Addr: ADDR}        =>  0xBC @ Addr`8
     
-    JV {Addr: u8}           =>  0xC0 @ Addr
+    JV {Addr: ADDR}         =>  0xC0 @ Addr`8
     
-    JNV {Addr: u8}          =>  0xC4 @ Addr
+    JNV {Addr: ADDR}        =>  0xC4 @ Addr`8
     
-    JN {Addr: u8}           =>  0xC8 @ Addr
+    JN {Addr: ADDR}         =>  0xC8 @ Addr`8
     
-    JP {Addr: u8}           =>  0xCC @ Addr
+    JP {Addr: ADDR}         =>  0xCC @ Addr`8
     
-    JSP {Addr: u8}          =>  0xD0 @ Addr
+    JSP {Addr: ADDR}        =>  0xD0 @ Addr`8
     
-    JLEU {Addr: u8}         =>  0xD4 @ Addr
+    JLEU {Addr: ADDR}       =>  0xD4 @ Addr`8
     
-    JLT {Addr: u8}          =>  0xD8 @ Addr
+    JLT {Addr: ADDR}        =>  0xD8 @ Addr`8
     
-    JLE {Addr: u8}          =>  0xDC @ Addr
+    JLE {Addr: ADDR}        =>  0xDC @ Addr`8
     
     
     ; OUTPUT AND MISC.
@@ -136,10 +141,10 @@
     LCD-Init                    =>  0xE0 @ 0x38 @ 0xE0 @ 0x0E @ 0xE0 @ 0x06
     LCD-Clr                     =>  0xE0 @ 0x01
     
-    JEQ  {Addr: u8}             =>  0xB0 @ Addr
-    JNE  {Addr: u8}             =>  0xB4 @ Addr
-    JLTU {Addr: u8}             =>  0xB8 @ Addr
-    JNIN {Addr: u8}             =>  0x2CFFB0 @ Addr
+    JEQ  {Addr: ADDR}           =>  0xB0 @ Addr`8
+    JNE  {Addr: ADDR}           =>  0xB4 @ Addr`8
+    JLTU {Addr: ADDR}           =>  0xB8 @ Addr`8
+    JNIN {Addr: ADDR}           =>  0x2CFFB0 @ Addr`8
 }
 
 ; CESCA MEMORY BANKS:

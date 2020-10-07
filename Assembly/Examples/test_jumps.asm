@@ -61,21 +61,20 @@ test_cond0:
     MOVI R2, 0xF0
     
     CMP-SUB R0, R1
-    ; pc points to current instruction.
-    ; Since instructions are 2 byte wide, pc+2 points at ADDI and pc+4 skips ADDI
-    JNC (pc + 4)
+    ; skip 1 instruction (ADDI)
+    JNC skip(1)
     ADDI R2, R2, 0b00000001
     
     CMP-SUB R0, R1
-    JC (pc + 4)
+    JC skip(1)
     ADDI R2, R2, 0b00000010
     
     CMP-SUB R0, R1
-    JNZ (pc + 4)
+    JNZ skip(1)
     ADDI R2, R2, 0b00000100
     
     CMP-SUB R0, R1
-    JZ (pc + 4)
+    JZ skip(1)
     ADDI R2, R2, 0b00001000
     
     NOT R0, R2  ; Invert results
@@ -87,35 +86,35 @@ test_cond1:
     MOVI R2, 0x00
     
     CMP-SUB R0, R1
-    JLE (pc + 4)
+    JLE skip(1)
     ADDI R2, R2, 0b00000001
     
     CMP-SUB R0, R1
-    JLT (pc + 4)
+    JLT skip(1)
     ADDI R2, R2, 0b00000010
     
     CMP-SUB R0, R1
-    JLEU (pc + 4)
+    JLEU skip(1)
     ADDI R2, R2, 0b00000100
     
     CMP-SUB R0, R1
-    JSP (pc + 4)
+    JSP skip(1)
     ADDI R2, R2, 0b00001000
     
     CMP-SUB R0, R1
-    JP (pc + 4)
+    JP skip(1)
     ADDI R2, R2, 0b00010000
     
     CMP-SUB R0, R1
-    JN (pc + 4)
+    JN skip(1)
     ADDI R2, R2, 0b00100000
     
     CMP-SUB R0, R1
-    JNV (pc + 4)
+    JNV skip(1)
     ADDI R2, R2, 0b01000000
     
     CMP-SUB R0, R1
-    JV (pc + 4)
+    JV skip(1)
     ADDI R2, R2, 0b10000000
     
     NOT R0, R2  ; Invert results
