@@ -3,7 +3,7 @@
 ; Program for checking if the keyboard / keyboard controller work.
 ; Reads inputs from the keyboard and displays them on the LCD screen.
 
-#bank "program"
+#bank program
     MOVI R0, 0
     LCD-Init
     
@@ -11,7 +11,7 @@ poll:
     JNIN poll       ; Infinite loop until a key is pressed
     
     CMP-IN 0x80     ; Check if a special key has been pressed
-    JNZ special
+    JNZ .special
     
     IN R0           ; Get the ASCII input
     LCD-Reg R0      ; Display the character 
@@ -19,13 +19,13 @@ poll:
     
     J poll          ; Return to polling
     
-special:
+.special:
     CMP-IN 0x20     ; Check if it's the Enter key
     IN-Ack
-    JZ .backspace
+    JZ ..backspace
     HLT             ; If it's Enter, terminate program
     
-.backspace:
+..backspace:
     LCD-Clr         ; If it's Backspace, clear the LCD
     J poll
     

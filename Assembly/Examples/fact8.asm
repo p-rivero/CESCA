@@ -4,7 +4,7 @@
 
 NUM = 5     ; The number from which to compute the factorial. Result = (NUM)!
 
-#bank "program"
+#bank program
 
     MOVI R0, NUM
     CALL factorial
@@ -13,7 +13,7 @@ NUM = 5     ; The number from which to compute the factorial. Result = (NUM)!
     
     
 ; FACTORIAL SUBROUTINE      Arguments: R0 = n     Returns: R0 = n!
-factorial: 
+factorial:
     PUSH R2         ; Store protected register
     MOV R2, R0      ; Save number for later
     
@@ -27,7 +27,7 @@ factorial:
     CALL factorial  ; Compute (n - 1)! (leaves result in R0)
     
     MOV R1, R2      ; Get n from protected register
-    CALL mult8      ; n! = n * (n - 1)!
+    CALL MATH.UMult      ; n! = n * (n - 1)!
     
 .return:
     POP R2          ; Restore protected register

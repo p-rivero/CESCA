@@ -7,14 +7,13 @@
 
 ; WARNING: THE J AND JNZ INTRUCTIONS NEED TO BE CHECKED MANUALLY, SINCE THIS TEST DEPENDS ON THEM
 
-#bank "data"
+#bank data
 ; Arguments to be tested:
 args:       #d8 0, 0,     25, 25,   -1, -1,   0, 100,   5, 127,   10, -10,  0, -128,  -1, -128,  -128, 0,  -128, 1,  2, 1,     -2, -1
 ; Expected outputs (inverted, since the method I had before used inverted results, and it's easier to just add a NOT instruction to the new method):
 outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0xA4,  5, 0x58,   5, 0x63,  5, 0x9B,  5, 0x58,  6, 0x67
 
-#bank "program"
-
+#bank program
 ; Main program
     MOVI R2, args
     MOVI R3, outputs
@@ -62,6 +61,8 @@ test_cond0:
     MOVI R2, 0xF0
     
     CMP-SUB R0, R1
+    ; pc points to current instruction.
+    ; Since instructions are 2 byte wide, pc+2 points at ADDI and pc+4 skips ADDI
     JNC (pc + 4)
     ADDI R2, R2, 0b00000001
     

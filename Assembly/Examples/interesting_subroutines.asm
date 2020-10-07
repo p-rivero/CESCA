@@ -7,11 +7,11 @@
 #include "CESCA.cpu"
 
 
-#bank "data"
+#bank data
 mult16_naive_A:     #res 2      ; First 16 bit operand for mult16_naive
 mult16_naive_B:     #res 2      ; Second 16 bit operand for mult16_naive
     
-#bank "program"
+#bank program
 
 ; NAIVE MULTIPLY SUBROUTINE (SLOW!)       Arguments: R0 = n, R1 = m     Returns: R0 = n*m
 

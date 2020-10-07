@@ -1,179 +1,163 @@
-#cpudef "CESCA"
-{
-    #bits 8
+#subruledef REG {
+    R0 => 0b00
+    R1 => 0b01
+    R2 => 0b10
+    R3 => 0b11
+}
+
+#subruledef AluOpA {
+    MOV => 0x0
+    NOT => 0x7
+    SLL => 0xC
+    SRL => 0xD
+    SRA => 0xE
+    ROL => 0xF
+}
+
+#subruledef AluOpAB {
+    ADD  => 0x1
+    SUB  => 0x2
+    ADDC => 0x3
+    SUBB => 0x4
+    AND  => 0x5
+    OR   => 0x6
+    XOR  => 0x8
+    NAND => 0x9
+    NOR  => 0xA
+    XNOR => 0xB
+}
+
+#ruledef Instructions {
+    ; ARITHMETIC AND LOGIC OPERATIONS
     
-    #tokendef REG
-    {
-        R0 = 0b00
-        R1 = 0b01
-        R2 = 0b10
-        R3 = 0b11
-    }
+    {Op: AluOpA}  {Rd: REG}, {Ra: REG}              =>  0x0 @ Rd`2 @ Ra`2 @ Op`4 @ 0x0
+    {Op: AluOpAB} {Rd: REG}, {Ra: REG}, {Rb: REG}   =>  0x0 @ Rd`2 @ Ra`2 @ Op`4 @ 0b00 @ Rb`2
     
+    ADDI {Rd: REG}, {Ra: REG}, {Imm: i8}    =>  0x1 @ Rd`2 @ Ra`2 @ Imm
     
-    ; ARITHMETIC LOGIC OPERATIONS
+    CMP-{Op: AluOpA}  {Ra: REG}             =>  0x2 @ 0b00 @ Ra`2 @ Op`4 @ 0x0
+    CMP-{Op: AluOpAB} {Ra: REG}, {Rb: REG}  =>  0x2 @ 0b00 @ Ra`2 @ Op`4 @ 0b00 @ Rb`2
     
-    MOV  {Rd: REG}, {Ra: REG}               ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x00
-    ADD  {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x1 @ 0b00 @ Rb[1:0]
-    SUB  {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0]
-    ADDC {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x3 @ 0b00 @ Rb[1:0]
-    SUBB {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x4 @ 0b00 @ Rb[1:0]
-    AND  {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x5 @ 0b00 @ Rb[1:0]
-    OR   {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x6 @ 0b00 @ Rb[1:0]
-    NOT  {Rd: REG}, {Ra: REG}               ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x70
-    XOR  {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x8 @ 0b00 @ Rb[1:0]
-    NAND {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x9 @ 0b00 @ Rb[1:0]
-    NOR  {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0xA @ 0b00 @ Rb[1:0]
-    XNOR {Rd: REG}, {Ra: REG}, {Rb: REG}    ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0xB @ 0b00 @ Rb[1:0]
-    SLL  {Rd: REG}, {Ra: REG}               ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0xC0
-    SRL  {Rd: REG}, {Ra: REG}               ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0xD0
-    SRA  {Rd: REG}, {Ra: REG}               ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0xE0
-    ROL  {Rd: REG}, {Ra: REG}               ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0xF0
+    CMP-SUBI {Ra: REG}, {Imm: i8}   =>  0x2 @ 0b01 @ Ra`2 @ Imm
     
-    ADDI {Rd: REG}, {Ra: REG}, {Imm: i8}    ->  0x1 @ Rd[1:0] @ Ra[1:0] @ Imm
+    CMP-ANDI {Ra: REG}, {Imm: i8}   =>  0x2 @ 0b10 @ Ra`2 @ Imm
     
-    CMP-MOV  {Ra: REG}              ->  0x2 @ 0b00 @ Ra[1:0] @ 0x00
-    CMP-ADD  {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0x1 @ 0b00 @ Rb[1:0]
-    CMP-SUB  {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0]
-    CMP-ADDC {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0x3 @ 0b00 @ Rb[1:0]
-    CMP-SUBB {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0x4 @ 0b00 @ Rb[1:0]
-    CMP-AND  {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0x5 @ 0b00 @ Rb[1:0]
-    CMP-OR   {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0x6 @ 0b00 @ Rb[1:0]
-    CMP-NOT  {Ra: REG}              ->  0x2 @ 0b00 @ Ra[1:0] @ 0x70
-    CMP-XOR  {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0x8 @ 0b00 @ Rb[1:0]
-    CMP-NAND {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0x9 @ 0b00 @ Rb[1:0]
-    CMP-NOR  {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0xA @ 0b00 @ Rb[1:0]
-    CMP-XNOR {Ra: REG}, {Rb: REG}   ->  0x2 @ 0b00 @ Ra[1:0] @ 0xB @ 0b00 @ Rb[1:0]
-    CMP-SLL  {Ra: REG}              ->  0x2 @ 0b00 @ Ra[1:0] @ 0xC0
-    CMP-SRL  {Ra: REG}              ->  0x2 @ 0b00 @ Ra[1:0] @ 0xD0
-    CMP-SRA  {Ra: REG}              ->  0x2 @ 0b00 @ Ra[1:0] @ 0xE0
-    CMP-ROL  {Ra: REG}              ->  0x2 @ 0b00 @ Ra[1:0] @ 0xF0
-    
-    CMP-SUBI {Ra: REG}, {Imm: i8}   ->  0x2 @ 0b01 @ Ra[1:0] @ Imm
-    
-    CMP-ANDI {Ra: REG}, {Imm: i8}   ->  0x2 @ 0b10 @ Ra[1:0] @ Imm
-    
-    CMP-IN {Imm: i8}                ->  0x2C @ Imm[7:0]
+    CMP-IN {Imm: i8}                =>  0x2C @ Imm
     
     
     ; DATA MOVEMENT
     
-    MOVI {Rd: REG}, {Imm: i8}       ->  0x3 @ Rd[1:0] @ 0b00 @ Imm
+    MOVI {Rd: REG}, {Imm: i8}       =>  0x3 @ Rd`2 @ 0b00 @ Imm
     
-    IN {Rd: REG}                    ->  0x4 @ Rd[1:0] @ 0b00 @ 0x00
+    IN {Rd: REG}                    =>  0x4 @ Rd`2 @ 0b00 @ 0x00
     
-    IN-Ack                          ->  0x5000
+    IN-Ack                          =>  0x5000
     
-    ST-Addr {Ra: REG}, {Addr: u8}   ->  0x5 @ 0b01 @ Ra[1:0] @ Addr
+    ST-Addr {Ra: REG}, {Addr: u8}   =>  0x5 @ 0b01 @ Ra`2 @ Addr
     
-    ST-Reg {Ra: REG}, {Rb: REG}     ->  0x5 @ 0b10 @ Ra[1:0] @ 0b000000 @ Rb[1:0]
+    ST-Reg {Ra: REG}, {Rb: REG}     =>  0x5 @ 0b10 @ Ra`2 @ 0b000000 @ Rb`2
     
-    PUSH {Ra: REG}                  ->  0x5 @ 0b11 @ Ra[1:0] @ 0x00
+    PUSH {Ra: REG}                  =>  0x5 @ 0b11 @ Ra`2 @ 0x00
     
-    LD-Addr {Rd: REG}, {Addr: u8}   ->  0x6 @ Rd[1:0] @ 0b00 @ Addr
+    LD-Addr {Rd: REG}, {Addr: u8}   =>  0x6 @ Rd`2 @ 0b00 @ Addr
     
-    LD-Reg {Rd: REG}, {Ra: REG}     ->  0x7 @ Rd[1:0] @ Ra[1:0] @ 0x00
+    LD-Reg {Rd: REG}, {Ra: REG}     =>  0x7 @ Rd`2 @ Ra`2 @ 0x00
     
-    POP {Rd: REG}                   ->  0x8 @ Rd[1:0] @ 0b00 @ 0x00
+    POP {Rd: REG}                   =>  0x8 @ Rd`2 @ 0b00 @ 0x00
     
-    SWAP {Rd: REG}, {Ra: REG}       ->  0x9 @ Rd[1:0] @ Ra[1:0] @ 0x00
+    SWAP {Rd: REG}, {Ra: REG}       =>  0x9 @ Rd`2 @ Ra`2 @ 0x00
     
     
     ; JUMP INSTRUCTIONS
-    ; All instructions take 2 bytes but the PC should only be increased by one. Declaring the adress as u9 and ignoring
-    ; the last bit is a workaround for jumping to labels, but it won't work with immediates (you shouldn't be jumping to
-    ; hardcoded addesses anyways). Setting the #bits to 16 messes up the data memory
     
-    J {Addr: u9}            ->  0xA0 @ Addr[8:1]
+    J {Addr: u8}            =>  0xA0 @ Addr
     
-    JR {Ra: REG}            ->  0xA @ 0b01 @ Ra[1:0] @ 0x00
+    JR {Ra: REG}            =>  0xA @ 0b01 @ Ra`2 @ 0x00
     
-    CALL {Addr: u9}         ->  0xA8 @ Addr[8:1]
+    CALL {Addr: u8}         =>  0xA8 @ Addr
     
-    RET                     ->  0xAC00
+    RET                     =>  0xAC00
     
-    JZ {Addr: u9}           ->  0xB0 @ Addr[8:1]
+    JZ {Addr: u8}           =>  0xB0 @ Addr
     
-    JNZ {Addr: u9}          ->  0xB4 @ Addr[8:1]
+    JNZ {Addr: u8}          =>  0xB4 @ Addr
     
-    JC {Addr: u9}           ->  0xB8 @ Addr[8:1]
+    JC {Addr: u8}           =>  0xB8 @ Addr
     
-    JNC {Addr: u9}          ->  0xBC @ Addr[8:1]
+    JNC {Addr: u8}          =>  0xBC @ Addr
     
-    JV {Addr: u9}           ->  0xC0 @ Addr[8:1]
+    JV {Addr: u8}           =>  0xC0 @ Addr
     
-    JNV {Addr: u9}          ->  0xC4 @ Addr[8:1]
+    JNV {Addr: u8}          =>  0xC4 @ Addr
     
-    JN {Addr: u9}           ->  0xC8 @ Addr[8:1]
+    JN {Addr: u8}           =>  0xC8 @ Addr
     
-    JP {Addr: u9}           ->  0xCC @ Addr[8:1]
+    JP {Addr: u8}           =>  0xCC @ Addr
     
-    JSP {Addr: u9}          ->  0xD0 @ Addr[8:1]
+    JSP {Addr: u8}          =>  0xD0 @ Addr
     
-    JLEU {Addr: u9}         ->  0xD4 @ Addr[8:1]
+    JLEU {Addr: u8}         =>  0xD4 @ Addr
     
-    JLT {Addr: u9}          ->  0xD8 @ Addr[8:1]
+    JLT {Addr: u8}          =>  0xD8 @ Addr
     
-    JLE {Addr: u9}          ->  0xDC @ Addr[8:1]
+    JLE {Addr: u8}          =>  0xDC @ Addr
     
     
     ; OUTPUT AND MISC.
     
-    LCD-Com {Imm: i8}       ->  0xE0 @ Imm[7:0]
+    LCD-Com {Imm: i8}       =>  0xE0 @ Imm
     
-    LCD-Imm {Imm: i8}       ->  0xE4 @ Imm[7:0]
+    LCD-Imm {Imm: i8}       =>  0xE4 @ Imm
     
-    LCD-Reg {Ra: REG}       ->  0xE @ 0b10 @ Ra[1:0] @ 0x00
+    LCD-Reg {Ra: REG}       =>  0xE @ 0b10 @ Ra`2 @ 0x00
     
-    LCD-Addr {Addr: u8}     ->  0xEC @ Addr[7:0]
+    LCD-Addr {Addr: u8}     =>  0xEC @ Addr
     
-    OUT-Reg {Ra: REG}       ->  0xF @ 0b00 @ Ra[1:0] @ 0x00
+    OUT-Reg {Ra: REG}       =>  0xF @ 0b00 @ Ra`2 @ 0x00
     
-    OUT-Addr {Addr: u8}     ->  0xF4 @ Addr[7:0]
+    OUT-Addr {Addr: u8}     =>  0xF4 @ Addr
     
-    HLT                     ->  0xF800
+    HLT                     =>  0xF800
     
-    NOP                     ->  0xFFFF
+    NOP                     =>  0xFFFF
     
+}
+
+#ruledef Macros {
+    CMP {Ra: REG}, {Rb: REG}    =>  0x2 @ 0b00 @ Ra`2 @ 0x2 @ 0b00 @ Rb`2
+    CMP {Ra: REG}, {Imm: i8}    =>  0x2 @ 0b01 @ Ra`2 @ Imm
+    TEST {Ra: REG}              =>  0x2 @ 0b00 @ Ra`2 @ 0x00
     
+    INC  {Ra: REG}              =>  0x1 @ Ra`2 @ Ra`2 @ 0x01
+    DEC  {Ra: REG}              =>  0x1 @ Ra`2 @ Ra`2 @ 0xFF
+    SLLC {Rd: REG}, {Ra: REG}   =>  0x0 @ Rd`2 @ Ra`2 @ 0x3 @ 0b00 @ Ra`2
+    SWAP {Ra: REG}              =>  0x9 @ Ra`2 @ Ra`2 @ 0x00
     
+    LCD-Init                    =>  0xE0 @ 0x38 @ 0xE0 @ 0x0E @ 0xE0 @ 0x06
+    LCD-Clr                     =>  0xE0 @ 0x01
     
-    ; MACROS:
-    CMP {Ra: REG}, {Rb: REG}    ->  0x2 @ 0b00 @ Ra[1:0] @ 0x2 @ 0b00 @ Rb[1:0]
-    CMP {Ra: REG}, {Imm: i8}    ->  0x2 @ 0b01 @ Ra[1:0] @ Imm[7:0]
-    TEST {Ra: REG}              ->  0x2 @ 0b00 @ Ra[1:0] @ 0x00
-    
-    INC {Ra: REG}               ->  0x1 @ Ra[1:0] @ Ra[1:0] @ 0x01
-    DEC {Ra: REG}               ->  0x1 @ Ra[1:0] @ Ra[1:0] @ 0xFF
-    SLLC {Rd: REG}, {Ra: REG}   ->  0x0 @ Rd[1:0] @ Ra[1:0] @ 0x3 @ 0b00 @ Ra[1:0]
-    SWAP {Ra: REG}              ->  0x9 @ Ra[1:0] @ Ra[1:0] @ 0x00
-    
-    LCD-Init                    ->  0xE0 @ 0x38 @ 0xE0 @ 0x0E @ 0xE0 @ 0x06
-    LCD-Clr                     ->  0xE0 @ 0x01
-    
-    JEQ {Addr: u9}              ->  0xB0 @ Addr[8:1]
-    JNE {Addr: u9}              ->  0xB4 @ Addr[8:1]
-    JLTU {Addr: u9}             ->  0xB8 @ Addr[8:1]
-    JNIN {Addr: u9}             ->  0x2CFFB0 @ Addr[8:1]
-    
+    JEQ  {Addr: u8}             =>  0xB0 @ Addr
+    JNE  {Addr: u8}             =>  0xB4 @ Addr
+    JLTU {Addr: u8}             =>  0xB8 @ Addr
+    JNIN {Addr: u8}             =>  0x2CFFB0 @ Addr
 }
 
 ; CESCA MEMORY BANKS:
 ; Program memory: Banks 00 and 01 -> 512 bytes
-#bankdef "program"
-{
-    #addr 0x000
-    #size 0x200
-    #outp 0x000
+#bankdef program {
+    #bits 16
+    #addr 0
+    #size 0x100
+    #outp 0
     #fill
 }
 
 ; Data memory: Bank 10 -> 256 bytes
-#bankdef "data"
-{
-    #addr 0x000
+#bankdef data {
+    #bits 8
+    #addr 0
     #size 0x100
-    #outp 0x200
+    #outp 0x200*8   ; Output location in bits
     #fill
 }
 
