@@ -5,26 +5,27 @@
     R3 => 0b11
 }
 
+; The order of the bits is flipped because I made a mistake in the
+; wiring and it's much easier to fix it this way.
 #subruledef AluOpA {
-    MOV => 0x0
-    NOT => 0x7
-    SLL => 0xC
-    SRL => 0xD
-    SRA => 0xE
-    ROL => 0xF
+    MOV => 0b0000
+    NOT => 0b1110
+    SLL => 0b0011
+    SRL => 0b1011
+    SRA => 0b0111
+    ROL => 0b1111
 }
-
 #subruledef AluOpAB {
-    ADD  => 0x1
-    SUB  => 0x2
-    ADDC => 0x3
-    SUBB => 0x4
-    AND  => 0x5
-    OR   => 0x6
-    XOR  => 0x8
-    NAND => 0x9
-    NOR  => 0xA
-    XNOR => 0xB
+    ADD  => 0b1000
+    SUB  => 0b0100
+    ADDC => 0b1100
+    SUBB => 0b0010
+    AND  => 0b1010
+    OR   => 0b0110
+    XOR  => 0b0001
+    NAND => 0b1001
+    NOR  => 0b0101
+    XNOR => 0b1101
 }
 
 #subruledef ADDR {
