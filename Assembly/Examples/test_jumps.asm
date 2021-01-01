@@ -1,4 +1,5 @@
 #include "CESCA.cpu"
+#include "startup.asm"
 
 ; Program for checking if all the conditional jumps work. The decimal display outputs the current state:
 ; - Program running: 0

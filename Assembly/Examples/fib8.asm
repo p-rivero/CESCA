@@ -1,4 +1,5 @@
 #include "CESCA.cpu"
+#include "startup.asm"
 
 ; FIBONACCI SEQUENCE
 #bank program

@@ -1,4 +1,5 @@
 #include "CESCA.cpu"
+#include "startup.asm"
 
 ; Computes factorials modulo 256. Tests the functionality of CALL and RET instructions.
 

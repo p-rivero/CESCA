@@ -5,6 +5,7 @@
 ; anything useful and some parts are even unreachable. It's meant to give an intuition of how would a real program look like.
 
 #include "CESCA.cpu" ; Include cpudef
+#include "startup.asm" ; Include some startup code for initializing the 7-segment display and the LCD
 
 ; constant that can be used as a number
 constant = 0x10 - (2 * 4 + 0x07)
@@ -23,7 +24,7 @@ vector:     #d8 3, 2, 1, 0, -1
 global_label:
     .local_const = 2        ; Labels and constants that start with a dot (.) are local (only visible whithin 2 global labels)
     
-    NOP                     ; This is the first instruction that will be executed (PC=0x00)
+    NOP                     ; This is the first instruction that will be executed (after the startup code)
     MOVI R3, constant       ; Loads 1 into R3 (0x10 - (2 * 4 + 0x07) evaluates to 1). R3 is a protected register
     MOVI R2, .local_const   ; Loads 2 into R2. R2 is a protected register
     SUB R1, R2, R3          ; R1 = R2 - R3. Note that the contents of R2 and R3 are unchanged

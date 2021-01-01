@@ -1,4 +1,5 @@
 #include "CESCA.cpu"
+#include "startup.asm"
 
 ; Program for checking if the keyboard / keyboard controller work.
 ; Reads inputs from the keyboard and displays them on the LCD screen.
