@@ -1,1 +1,5 @@
 Assembly/*.exe
+Assembly/ram_programmer/program.h
+Assembly/ram_programmer/RAM_Programmer
+Assembly/.old
+CESC Computer/.misc
