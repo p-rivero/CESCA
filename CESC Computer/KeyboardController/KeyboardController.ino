@@ -3,12 +3,11 @@
 #define DATA_PIN 4
 #define IRQ_PIN  3
 
-// TODO: Define pins according to breadboard layout
-#define BUS_0 -1
-#define BUS_7 -1
-#define CLK_INV -1
-#define ACK_PIN -1
-#define OUTPUT_ENABLE -1
+#define BUS_0 5
+#define BUS_7 12
+#define CLK_INV 15
+#define ACK_PIN 14        // Active low
+#define OUTPUT_ENABLE 13  // Active low
 
 PS2Keyboard keyboard;
 
@@ -73,11 +72,6 @@ const PROGMEM PS2Keymap_t PS2Keymap_CustomSpanish = {
 };
 
 
-
-void setup() {
-    keyboard.begin(DATA_PIN, IRQ_PIN, PS2Keymap_CustomSpanish);
-}
-
 // Convert an ascii keystroke to the CESCA keyboard format
 byte cesca_translate(uint16_t character) {
     byte result;
@@ -126,9 +120,17 @@ void busHighZ() {
     outputting = false;
 }
 
+void setup() {
+    keyboard.begin(DATA_PIN, IRQ_PIN, PS2Keymap_CustomSpanish);
+    busHighZ();
+    pinMode(OUTPUT_ENABLE, INPUT);
+    pinMode(ACK_PIN, INPUT);
+    pinMode(CLK_INV, INPUT);
+}
+
 void loop() {    
     // If current character is empty and not being cleared, check if a new character is available
-    if (currentChar == 0 and not digitalRead(ACK_PIN) and keyboard.available()) {
+    if (currentChar == 0 and digitalRead(ACK_PIN) and keyboard.available()) {
         uint16_t r = keyboard.read();
         // Since PS2Keyboard library doesn't support sending commands to the keyboard, there is no way to disable Typematic Repeat
         // (keyboard keeps sending keystrokes for as long as the key is pressed down).
@@ -139,13 +141,13 @@ void loop() {
         currentChar = cesca_translate(r);
     }
 
-    // Only if OUTPUT_ENABLE is high, output current character to bus
-    if (not outputting and digitalRead(OUTPUT_ENABLE))
+    // Only if OUTPUT_ENABLE is active, output current character to bus
+    if (not outputting and not digitalRead(OUTPUT_ENABLE))
         busWrite(currentChar);
-    else if (outputting and not digitalRead(OUTPUT_ENABLE))
+    else if (outputting and digitalRead(OUTPUT_ENABLE))
         busHighZ();
 
-    // If ACK and CLK are high, clear current character
-    if (currentChar != 0 and digitalRead(ACK_PIN) and not digitalRead(CLK_INV))
+    // If ACK and CLK are active, clear current character
+    if (currentChar != 0 and not digitalRead(ACK_PIN) and not digitalRead(CLK_INV))
         currentChar = 0;
 }
