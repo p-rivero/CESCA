@@ -130,13 +130,13 @@
 }
 
 #ruledef Macros {
-    CMP {Ra: REG}, {Rb: REG}    =>  0x2 @ 0b00 @ Ra`2 @ 0x2 @ 0b00 @ Rb`2
+    CMP {Ra: REG}, {Rb: REG}    =>  0x2 @ 0b00 @ Ra`2 @ 0b0100 @ 0b00 @ Rb`2
     CMP {Ra: REG}, {Imm: i8}    =>  0x2 @ 0b01 @ Ra`2 @ Imm
     TEST {Ra: REG}              =>  0x2 @ 0b00 @ Ra`2 @ 0x00
     
     INC  {Ra: REG}              =>  0x1 @ Ra`2 @ Ra`2 @ 0x01
     DEC  {Ra: REG}              =>  0x1 @ Ra`2 @ Ra`2 @ 0xFF
-    SLLC {Rd: REG}, {Ra: REG}   =>  0x0 @ Rd`2 @ Ra`2 @ 0x3 @ 0b00 @ Ra`2
+    SLLC {Rd: REG}, {Ra: REG}   =>  0x0 @ Rd`2 @ Ra`2 @ 0b1100 @ 0b00 @ Ra`2
     SWAP {Ra: REG}              =>  0x9 @ Ra`2 @ Ra`2 @ 0x00
     
     LCD-Init                    =>  0xE0 @ 0x38 @ 0xE0 @ 0x0E @ 0xE0 @ 0x06
