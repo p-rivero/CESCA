@@ -4,8 +4,10 @@
 ; This example shows some important aspects of the CESCA assembler, as well as customasm in general. The program itself doesn't do
 ; anything useful and some parts are even unreachable. It's meant to give an intuition of how would a real program look like.
 
-#include "CESCA.cpu" ; Include cpudef
-#include "startup.asm" ; Include some startup code for initializing the 7-segment display and the LCD
+; Include ruledef
+#include "CESCA.cpu"
+; Include some startup code for initializing the 7-segment display and the LCD
+#include "startup.asm"
 
 ; constant that can be used as a number
 constant = 0x10 - (2 * 4 + 0x07)
@@ -77,5 +79,6 @@ subroutine:
 
 ; Libraries are included at the end of the file:
 
-#include "MATH.asm"  ; Include MATH library
+; Include MATH library
+#include "MATH.asm"
 

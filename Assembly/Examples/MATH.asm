@@ -1,3 +1,7 @@
+#ifndef _MATHLIB
+#define _MATHLIB
+; Include library only once
+
 ; ====================
 ;     MATH LIBRARY
 ; ====================
@@ -162,3 +166,6 @@ MATH:
     
 ..return:
     RET
+
+; End library
+#endif
