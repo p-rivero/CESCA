@@ -16,109 +16,108 @@ outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0
 
 #bank program
 ; Main program
-    MOVI R2, args
-    MOVI R3, outputs
+    mov R2, args
+    mov R3, outputs
 
 .loop:
-    LD-Reg R0, R2   ; Load first argument
-    INC R2
-    LD-Reg R1, R2   ; Load second argument
-    DEC R2
+    mov R0, (R2)    ; Load first argument
+    inc R2
+    mov R1, (R2)    ; Load second argument
+    dec R2
     
-    CALL test_cond0
-    LD-Reg R1, R3   ; Load first output
-    INC R3
-    CMP R0, R1
-    JNE error
+    call test_cond0
+    mov R1, (R3)    ; Load first output
+    inc R3
+    cmp R0, R1
+    jne error
     
-    LD-Reg R0, R2   ; Load first argument
-    INC R2
-    LD-Reg R1, R2   ; Load second argument
-    INC R2
+    mov R0, (R2)    ; Load first argument
+    inc R2
+    mov R1, (R2)    ; Load second argument
+    inc R2
     
-    CALL test_cond1
-    LD-Reg R1, R3   ; Load second output
-    INC R3
-    CMP R0, R1
-    JNE error
+    call test_cond1
+    mov R1, (R3)    ; Load second output
+    inc R3
+    cmp R0, R1
+    jne error
     
-    CMP R2, outputs - args ; Check if all tests have been performed
-    JNE .loop
+    cmp R2, outputs - args ; Check if all tests have been performed
+    jne .loop
     
-    MOVI R0, 1      ; Tests passed! Output a 1
-    OUT-Reg R0
-    HLT
+    mov R0, 1      ; Tests passed! Output a 1
+    mov OUT, R0
+    hlt
     
     
 ; Called if a test fails
 error:
-    MOVI R0, 0xFF
-    OUT-Reg R0
-    HLT
+    mov R0, 0xFF
+    mov OUT, R0
+    hlt
 
 
 test_cond0:     
-    PUSH R2
-    MOVI R2, 0xF0
+    push R2
+    mov R2, 0xF0
     
-    CMP-SUB R0, R1
-    ; skip 1 instruction (ADDI)
-    JNC skip(1)
-    ADDI R2, R2, 0b00000001
+    cmp R0, R1
+    jnc skip(1) ; skip 1 instruction (add)
+    add R2, R2, 0b00000001
     
-    CMP-SUB R0, R1
-    JC skip(1)
-    ADDI R2, R2, 0b00000010
+    cmp R0, R1
+    jc skip(1)
+    add R2, R2, 0b00000010
     
-    CMP-SUB R0, R1
-    JNZ skip(1)
-    ADDI R2, R2, 0b00000100
+    cmp R0, R1
+    jnz skip(1)
+    add R2, R2, 0b00000100
     
-    CMP-SUB R0, R1
-    JZ skip(1)
-    ADDI R2, R2, 0b00001000
+    cmp R0, R1
+    jz skip(1)
+    add R2, R2, 0b00001000
     
-    NOT R0, R2  ; Invert results
-    POP R2
-    RET
+    not R0, R2  ; Invert results
+    pop R2
+    ret
 
 test_cond1:     
-    PUSH R2
-    MOVI R2, 0x00
+    push R2
+    mov R2, 0x00
     
-    CMP-SUB R0, R1
-    JLE skip(1)
-    ADDI R2, R2, 0b00000001
+    cmp R0, R1
+    jle skip(1)
+    add R2, R2, 0b00000001
     
-    CMP-SUB R0, R1
-    JLT skip(1)
-    ADDI R2, R2, 0b00000010
+    cmp R0, R1
+    jlt skip(1)
+    add R2, R2, 0b00000010
     
-    CMP-SUB R0, R1
-    JLEU skip(1)
-    ADDI R2, R2, 0b00000100
+    cmp R0, R1
+    jleu skip(1)
+    add R2, R2, 0b00000100
     
-    CMP-SUB R0, R1
-    JSP skip(1)
-    ADDI R2, R2, 0b00001000
+    cmp R0, R1
+    jsp skip(1)
+    add R2, R2, 0b00001000
     
-    CMP-SUB R0, R1
-    JP skip(1)
-    ADDI R2, R2, 0b00010000
+    cmp R0, R1
+    jp skip(1)
+    add R2, R2, 0b00010000
     
-    CMP-SUB R0, R1
-    JN skip(1)
-    ADDI R2, R2, 0b00100000
+    cmp R0, R1
+    jn skip(1)
+    add R2, R2, 0b00100000
     
-    CMP-SUB R0, R1
-    JNV skip(1)
-    ADDI R2, R2, 0b01000000
+    cmp R0, R1
+    jnv skip(1)
+    add R2, R2, 0b01000000
     
-    CMP-SUB R0, R1
-    JV skip(1)
-    ADDI R2, R2, 0b10000000
+    cmp R0, R1
+    jv skip(1)
+    add R2, R2, 0b10000000
     
-    NOT R0, R2  ; Invert results
-    POP R2
-    RET
+    not R0, R2  ; Invert results
+    pop R2
+    ret
     

@@ -4,17 +4,17 @@
 ; FIBONACCI SEQUENCE
 #bank program
 
-    MOVI R0, 0
-    MOVI R1, 1
+    mov R0, 0
+    mov R1, 1
     
 fib:
-    OUT-Reg R1
-    ADD R0, R0, R1
-    JC .end
-    OUT-Reg R0
-    ADD R1, R0, R1
-    JNC fib
+    mov OUT, R1
+    add R0, R0, R1
+    jc .end
+    mov OUT, R0
+    add R1, R0, R1
+    jnc fib
 
 .end:
-    HLT ; Stops at the last 8-bit number in the sequence (233)
+    hlt ; Stops at the last 8-bit number in the sequence (233)
     
