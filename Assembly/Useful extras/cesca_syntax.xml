@@ -24,12 +24,12 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">R0 R1 R2 R3</Keywords>
-            <Keywords name="Keywords2">MOV ADD SUB ADDC SUBB AND OR NOT XOR NAND NOR XNOR SLL SRL SRA ROL ADDI ANDI SUBI MOVI IN ST LD PUSH POP SWAP J JR CALL RET JZ JNZ JC JNC JV JNV JN JP JSP JLEU JLT JLE LCD OUT HLT NOP</Keywords>
-            <Keywords name="Keywords3">#include #bits #bank #str #res #d #d8 pc skip</Keywords>
-            <Keywords name="Keywords4">Addr Reg Com Imm Ack program data</Keywords>
+            <Keywords name="Keywords1">R0 R1 R2 R3 IN OUT LCD LCDcmd</Keywords>
+            <Keywords name="Keywords2">mov add sub addc subb and or not xor nand nor xnor sll srl sra rol push pop swap jmp call ret jz jnz jeq jne jc jnc jv jnv jlz jp jgz jltu jleu jlt jle hlt nop&#x000D;&#x000A;cmp mask test inc dec sllc</Keywords>
+            <Keywords name="Keywords3">#include #define #ifndef #endif #bits #bank #str #res #d #d8 pc skip</Keywords>
+            <Keywords name="Keywords4">Init Clr Ack program data</Keywords>
             <Keywords name="Keywords5">..</Keywords>
-            <Keywords name="Keywords6">CMP TEST INC DEC SLLC Init Clr&#x000D;&#x000A;JNIN JEQ JNE JLTU JLEU JGTU JGEU JLT JLE JGT JGE</Keywords>
+            <Keywords name="Keywords6"></Keywords>
             <Keywords name="Keywords7"></Keywords>
             <Keywords name="Keywords8"></Keywords>
             <Keywords name="Delimiters">00&quot; 01 02&quot; 03&apos; 04 05&apos; 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
