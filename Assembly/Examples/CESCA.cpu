@@ -89,8 +89,8 @@
     
     ; JUMP INSTRUCTIONS
     
-    j {Addr: ADDR}      =>  _JUMP(0b101000, Addr)
-    jr {Ra: REG}        =>  0xA @ 0b01 @ Ra`2 @ 0x00
+    jmp {Addr: ADDR}    =>  _JUMP(0b101000, Addr)
+    jmp {Ra: REG}       =>  0xA @ 0b01 @ Ra`2 @ 0x00
     
     call {Addr: ADDR}   =>  0xA8 @ Addr
     ret                 =>  0xAC00
@@ -101,9 +101,9 @@
     jnc  {Addr: ADDR}   =>  _JUMP(0b101111, Addr)
     jv   {Addr: ADDR}   =>  _JUMP(0b110000, Addr)
     jnv  {Addr: ADDR}   =>  _JUMP(0b110001, Addr)
-    jn   {Addr: ADDR}   =>  _JUMP(0b110010, Addr)
+    jlz   {Addr: ADDR}  =>  _JUMP(0b110010, Addr)
     jp   {Addr: ADDR}   =>  _JUMP(0b110011, Addr)
-    jsp  {Addr: ADDR}   =>  _JUMP(0b110100, Addr)
+    jgz  {Addr: ADDR}   =>  _JUMP(0b110100, Addr)
     jleu {Addr: ADDR}   =>  _JUMP(0b110101, Addr)
     jlt  {Addr: ADDR}   =>  _JUMP(0b110110, Addr)
     jle  {Addr: ADDR}   =>  _JUMP(0b110111, Addr)

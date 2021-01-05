@@ -50,7 +50,7 @@ mult16_naive:
     mov R2, [mult16_naive_B]      ; Load B operand to R2/R3
     mov R3, [mult16_naive_B + 1]
     
-    j .loop_cond
+    jmp .loop_cond
     
 .loop:
     push R2

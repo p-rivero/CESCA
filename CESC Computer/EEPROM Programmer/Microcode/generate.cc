@@ -132,7 +132,7 @@ const vector<unsigned int> TEMPLATE = {
     LD_R, LD_R, LD_R, LD_R,         // 0111XX - LD-Reg
     POP, POP, POP, POP,             // 1000XX - POP
     SWAP, SWAP, SWAP, SWAP,         // 1001XX - SWAP
-    JMP,                            // 101000 - J
+    JMP,                            // 101000 - JMP
     JR,                             // 101001 - JR
     CALL,                           // 101010 - CALL
     RET,                            // 101011 - RET
@@ -142,9 +142,9 @@ const vector<unsigned int> TEMPLATE = {
     COND_JMP,                       // 101111 - JNC
     COND_JMP,                       // 110000 - JV
     COND_JMP,                       // 110001 - JNV
-    COND_JMP,                       // 110010 - JN
+    COND_JMP,                       // 110010 - JLZ
     COND_JMP,                       // 110011 - JP
-    COND_JMP,                       // 110100 - JSP
+    COND_JMP,                       // 110100 - JGZ
     COND_JMP,                       // 110101 - JLEU
     COND_JMP,                       // 110110 - JLT
     COND_JMP,                       // 110111 - JLE
@@ -191,10 +191,10 @@ void generate() {
         if (VF) enable_jmp(flags, 0b110000); // JV
         else    enable_jmp(flags, 0b110001); // JNV
         
-        if (SF) enable_jmp(flags, 0b110010); // JN
+        if (SF) enable_jmp(flags, 0b110010); // JLZ
         else    enable_jmp(flags, 0b110011); // JP
         
-        if (not SF and not ZF) enable_jmp(flags, 0b110100); // JSP
+        if (not SF and not ZF) enable_jmp(flags, 0b110100); // JGZ
         
         if (ZF or CF)  enable_jmp(flags, 0b110101); // JLEU
         

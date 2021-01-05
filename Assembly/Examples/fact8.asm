@@ -22,7 +22,7 @@ factorial:
     jp .recursion   ; if (n-1 >= 0) go to recursive call
     
     mov R0, 1      ; 0! is 1
-    j .return
+    jmp .return
 
 .recursion:
     call factorial  ; Compute (n - 1)! (leaves result in R0)

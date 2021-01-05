@@ -10,7 +10,7 @@ ENTER_KEY = 0x20
 
 #bank program
     mov R0, 0
-        
+    
 poll:
     mask IN, 0xFF   ; Infinite loop until a key is pressed
     jz poll
@@ -22,7 +22,7 @@ poll:
     mov LCD, R0     ; Display the character 
     mov IN, Ack     ; Acknowledge the input so the next one can be sent
     
-    j poll          ; Return to polling
+    jmp poll        ; Return to polling
     
 .special:
     mask IN, ENTER_KEY      ; Check if it's the Enter key
@@ -35,5 +35,5 @@ poll:
 ..backspace:
     mov IN, Ack
     mov LCDcmd, Clr    ; If Backspace was pressed or released, clear the LCD
-    j poll
+    jmp poll
     

@@ -32,7 +32,7 @@ global_label:
     sub R1, R2, R3         ; R1 = R2 - R3. Note that the contents of R2 and R3 are unchanged
     mov OUT, R1            ; Outputs the contents of R1 to the decimal display
     jne .local_label       ; JNE is a macro that gets expanded to JNZ (jump if R2 - R3 != 0, therefore R2 != R3)
-    j another_label
+    jmp another_label
     
 .local_label:
     mov R2, [num]          ; Loads 5 into R2 (protected register)
@@ -57,7 +57,7 @@ another_label:
     mov R0, R1              ; Copy contents of R1 to R0
     mov (result), R2        ; Store contents of R2 to the reserved space in data memory
     mov OUT, [vector+4]      ; Outputs -1 to the decimal display (vector[4])
-    j global_label
+    jmp global_label
     
 
 subroutine:

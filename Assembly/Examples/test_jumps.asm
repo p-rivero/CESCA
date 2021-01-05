@@ -6,7 +6,7 @@
 ; - All tests passed: 1
 ; - A test failed: 0xFF (255)
 
-; WARNING: THE J AND JNZ INTRUCTIONS NEED TO BE CHECKED MANUALLY, SINCE THIS TEST DEPENDS ON THEM
+; WARNING: THE JMP AND JNZ INTRUCTIONS NEED TO BE CHECKED MANUALLY, SINCE THIS TEST DEPENDS ON THEM
 
 #bank data
 ; Arguments to be tested:
@@ -98,7 +98,7 @@ test_cond1:
     add R2, R2, 0b00000100
     
     cmp R0, R1
-    jsp skip(1)
+    jgz skip(1)
     add R2, R2, 0b00001000
     
     cmp R0, R1
@@ -106,7 +106,7 @@ test_cond1:
     add R2, R2, 0b00010000
     
     cmp R0, R1
-    jn skip(1)
+    jlz skip(1)
     add R2, R2, 0b00100000
     
     cmp R0, R1
