@@ -74,13 +74,13 @@
     mov {Rd: REG}, IN               =>  0x4 @ Rd`2 @ 0b00 @ 0x00
     mov IN, Ack                     =>  0x5000
     
-    mov ({Addr: u8}), {Ra: REG}     =>  0x5 @ 0b01 @ Ra`2 @ Addr
-    mov ({Rb: REG}), {Ra: REG}      =>  0x5 @ 0b10 @ Ra`2 @ 0b000000 @ Rb`2
+    mov [{Addr: u8}], {Ra: REG}     =>  0x5 @ 0b01 @ Ra`2 @ Addr
+    mov [{Rb: REG}], {Ra: REG}      =>  0x5 @ 0b10 @ Ra`2 @ 0b000000 @ Rb`2
     
     push {Ra: REG}                  =>  0x5 @ 0b11 @ Ra`2 @ 0x00
     
     mov {Rd: REG}, [{Addr: u8}]     =>  0x6 @ Rd`2 @ 0b00 @ Addr
-    mov {Rd: REG}, ({Ra: REG})      =>  0x7 @ Rd`2 @ Ra`2 @ 0x00
+    mov {Rd: REG}, [{Ra: REG}]      =>  0x7 @ Rd`2 @ Ra`2 @ 0x00
     
     pop {Rd: REG}                   =>  0x8 @ Rd`2 @ 0b00 @ 0x00
     
@@ -101,7 +101,7 @@
     jnc  {Addr: ADDR}   =>  _JUMP(0b101111, Addr)
     jv   {Addr: ADDR}   =>  _JUMP(0b110000, Addr)
     jnv  {Addr: ADDR}   =>  _JUMP(0b110001, Addr)
-    jlz   {Addr: ADDR}  =>  _JUMP(0b110010, Addr)
+    jlz  {Addr: ADDR}   =>  _JUMP(0b110010, Addr)
     jp   {Addr: ADDR}   =>  _JUMP(0b110011, Addr)
     jgz  {Addr: ADDR}   =>  _JUMP(0b110100, Addr)
     jleu {Addr: ADDR}   =>  _JUMP(0b110101, Addr)
@@ -114,7 +114,7 @@
     mov LCDcmd, {Imm: i8}   =>  _LCD_COM(Imm)
     mov LCD, {Imm: i8}      =>  0xE4 @ Imm
     mov LCD, {Ra: REG}      =>  0xE @ 0b10 @ Ra`2 @ 0x00
-    mov LCD, ({Addr: u8})   =>  0xEC @ Addr
+    mov LCD, [{Addr: u8}]   =>  0xEC @ Addr
     
     mov OUT, {Ra: REG}      =>  0xF @ 0b00 @ Ra`2 @ 0x00
     mov OUT, [{Addr: u8}]   =>  0xF4 @ Addr

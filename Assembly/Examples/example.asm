@@ -38,13 +38,13 @@ global_label:
     mov R2, [num]          ; Loads 5 into R2 (protected register)
     mov R0, vector         ; Loads the address of vector[0]
     add R0, R0, 2
-    mov R1, (R0)           ; Loads 1 into R1 (vector[2])
+    mov R1, [R0]           ; Loads 1 into R1 (vector[2])
     call subroutine        ; Calls a subroutine. The arguments are in R0 and R1
     
 ..local_label2:     ; Symbols can have many layers. Labels with 2 dots are only visible whithin 2 labels with 1 dot.
     
     mov LCD, R0             ; The returned value of the subroutine is in R0. Outputs the result to the LCD display
-    mov (R0), R2            ; Stores 5 into the address in R0. The value of R2 has been preserved by the subroutine
+    mov [R0], R2            ; Stores 5 into the address in R0. The value of R2 has been preserved by the subroutine
     hlt                     ; Program ends
     
 .local_label3:
@@ -55,7 +55,7 @@ another_label:
 ; From this point, .local_const and .local_label aren't available directly.
 ; They can still be accessed with "global_label.local_const" and "global_label.local_label"
     mov R0, R1              ; Copy contents of R1 to R0
-    mov (result), R2        ; Store contents of R2 to the reserved space in data memory
+    mov [result], R2        ; Store contents of R2 to the reserved space in data memory
     mov OUT, [vector+4]      ; Outputs -1 to the decimal display (vector[4])
     jmp global_label
     

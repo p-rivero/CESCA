@@ -20,24 +20,24 @@ outputs:    #d8 9, 0x55,  9, 0x55,  9, 0x55,  6, 0x67,  6, 0x67,  6, 0x5C,  6, 0
     mov R3, outputs
 
 .loop:
-    mov R0, (R2)    ; Load first argument
+    mov R0, [R2]    ; Load first argument
     inc R2
-    mov R1, (R2)    ; Load second argument
+    mov R1, [R2]    ; Load second argument
     dec R2
     
     call test_cond0
-    mov R1, (R3)    ; Load first output
+    mov R1, [R3]    ; Load first output
     inc R3
     cmp R0, R1
     jne error
     
-    mov R0, (R2)    ; Load first argument
+    mov R0, [R2]    ; Load first argument
     inc R2
-    mov R1, (R2)    ; Load second argument
+    mov R1, [R2]    ; Load second argument
     inc R2
     
     call test_cond1
-    mov R1, (R3)    ; Load second output
+    mov R1, [R3]    ; Load second output
     inc R3
     cmp R0, R1
     jne error
