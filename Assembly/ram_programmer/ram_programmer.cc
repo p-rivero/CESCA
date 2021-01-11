@@ -38,19 +38,24 @@ void process_hexstr() {
 
 
 int main(int argc, char* argv[]) {
-
-    if (argc == 1) { // No arguments have been provided
-        cout << "CESC PROGRAM SENDER" << endl;
-        cout << "How to use: Specify (as an argument) the name of the file you want to assemble." << endl << endl;
-        cout << "Arduino IDE will be launched in order to send the file. Make sure you have it installed on your computer." << endl;
-        cout << "Once it launches, press UPLOAD (arrow at the top left) and open the SERIAL MONITOR (magnifing glass at the top right)." << endl;
+    // No arguments have been provided
+    if (argc == 1) {
+        cout << "CESC PROGRAM SENDER\n";
+        cout << "How to use: Specify (as an argument) the name of the file you want to assemble.\n\n";
+        cout << "Arduino IDE will be launched in order to send the file. Make sure you have it installed on your computer.\n";
+        cout << "Once it launches, press UPLOAD (arrow at the top left) and open the SERIAL MONITOR (magnifing glass at the top right).\n";
         cout << "Then, follow the instructions on the serial monitor (or just type \"p\" and press Enter)." << endl;
     }
-    else if (not file_exists("customasm.exe")) // One or more arguments have been provided, but customasm.exe can't be found
-        cout << "ERROR: customasm.exe can't be found! Download it from github.com/hlorenzi/customasm/releases and place it next to this file" << endl;
-
-    else if (not file_exists(ARDUINO_FILE)) // ram_programmer.ino can't be found
-        cout << "ERROR: ram_programmer.ino can't be found! Download it from github.com/p-rivero/CESCA/tree/master/Assembly and place it on a folder called \"ram_programmer\" next to this file" << endl;
+    // One or more arguments have been provided, but customasm.exe can't be found
+    else if (not file_exists("customasm.exe")) {
+        cout << "ERROR: customasm.exe can't be found! Download it from ";
+        cout << "github.com/hlorenzi/customasm/releases and place it next to this file" << endl;
+    }
+    // ram_programmer.ino can't be found
+    else if (not file_exists(ARDUINO_FILE)) {
+        cout << "ERROR: ram_programmer.ino can't be found! Download it from github.com/p-rivero/CESCA/tree/master/Assembly ";
+        cout << "and place it on a folder called \"ram_programmer\" next to this file" << endl;
+    }
 
     else { // No errors detected
         // Call customasm for assembling the file
@@ -60,8 +65,8 @@ int main(int argc, char* argv[]) {
         system(buff);
         
         if (not file_exists(TEMP_NAME)) {
-            cout << "Assembled file doesn't exist! Please read assembler error above." << endl;
-            return 0;
+            cout << "Error while assembling! Please read error above." << endl;
+            return EXIT_FAILURE;
         }
         
         // Generate header file
