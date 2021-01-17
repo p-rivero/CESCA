@@ -129,6 +129,7 @@
     cmp  {Ra: REG}, {Rb: REG}   =>  _CMP_AB(0b0100, Ra, Rb)
     mask {Ra: REG}, {Rb: REG}   =>  _CMP_AB(0b1010, Ra, Rb)
 
+    sub  {Rd: REG}, {Ra: REG}, {Imm: i8} => _ALU_ADDI(Rd, Ra, (0x00-Imm)`8)
     inc  {Ra: REG}              =>  _ALU_ADDI(Ra, Ra, 0x01)
     dec  {Ra: REG}              =>  _ALU_ADDI(Ra, Ra, 0xFF)
     sllc {Rd: REG}, {Ra: REG}   =>  _ALU_AB(0b1100, Rd, Ra, Ra)
