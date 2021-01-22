@@ -68,7 +68,7 @@ MATH:
     sllc R3, R3         ; Shift upper A to the left with carry
 
     srl R0, R0          ; Shift B to the right
-    jnz ..m_loop         ; Keep looping until B == 0
+    jnz ..m_loop        ; Keep looping until B == 0
     
 ..return:
     pop R0      ; Load lower bits of result
@@ -112,14 +112,14 @@ MATH:
 
 
 
-; 16 BIT DIVIDE SUBROUTINE (computes n (8 bit) * m (16 bit))
+; 16 BIT DIVIDE SUBROUTINE
 ; Arguments: R0-R1 = n (R0 contains lower bits), R2 = m       Returns: R0-R1 = n/m (R0 contains lower bits), R3 = n%m
 ; Constant-ish complexity. Absolute worst case: ~750 clock cycles
 ; Adapted from James Sharman's video
 
 .UDiv16:
     test R1
-    jz .UDiv8       ; If upper bits are 0, use 8 bit version
+    jz ..div_by_8bit    ; If upper bits are 0, use 8 bit version
     
     push R0         ; Store lower numerator
     mov R0, R1      ; Use upper numerator as argument for 8 bit version
@@ -131,6 +131,10 @@ MATH:
     pop R1          ; Restore high result
     ret
 
+..div_by_8bit:
+    call .UDiv8
+    mov R1, 0       ; Clear upper bits of result
+    ret
 
 
 
