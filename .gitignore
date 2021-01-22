@@ -1,3 +1,5 @@
 Assembly/*.exe
 Assembly/ram_programmer/program.h
 Assembly/ram_programmer/RAM_Programmer
+Assembly/*.hex
+Assembly/GEN_LW

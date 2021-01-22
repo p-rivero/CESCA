@@ -13,9 +13,8 @@ sim: customasm.exe
 
 file: customasm.exe
 	cpp -x assembler-with-cpp -nostdinc -CC -undef -P $(target) > $(temporary)
-	./customasm.exe $(temporary) -f logisim8 -o $(temporary)
-	# start at line 2 (remove first line with text "v2.0 raw"). This workaround may need to be removed in the future
-	tail -n +2 $(temporary) > $(output)
+	./customasm.exe $(temporary) -f deccomma -o $(temporary)
+	./GEN_LW.exe $(temporary)
 	rm -f $(temporary)
 
 rom: customasm.exe
