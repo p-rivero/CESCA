@@ -103,5 +103,18 @@ PRINT:
 ; Loop ended: pop and print remainders (digits)
     jmp .uint8.print_loop ; Printing the characters and returning is identical in .uint8 and .uint16
 
+
+
+.string:
+    mov R1, [R0]
+    test R1
+    jz ..return
+    mov LCD, R1
+    inc R0
+    jmp .string
+
+..return:
+    ret
+
 ; End library
 #endif
