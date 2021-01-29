@@ -8,7 +8,7 @@ This repository contains the following:
 - Examples of some assembly programs
 
 ## CESC computer:
-- Pictures of the finished build **(not yet)**
+- Pictures of the finished build
 - Schematics **(not yet)**
 - Code for programming all its EEPROMs
 - Code for assembing and sending programs to the Arduino RAM programmer
