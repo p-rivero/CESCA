@@ -2,7 +2,6 @@
 #include "startup.asm"
 
 ; This program finds all primes that fit in 16 bits
-; Using an incremental sieve of Eratosthenes 
 
 #bank data
 str_start: #d "Starting...\0"
